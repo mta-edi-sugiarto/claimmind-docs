@@ -1,0 +1,122 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "ClaimMind Docs",
+  "colors": {
+    "primary": "#2563EB",  
+    "light": "#3B82F6",    
+    "dark": "#1E40AF"      
+  },
+  "favicon": "/favicon.svg",
+  "appearance": {
+    "default": "light",
+    "strict": false
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts-glossary",
+              "data-models-overview"
+            ]
+          },
+          {
+            "group": "How-To Guides",
+            "pages": [
+              "workflow-guides",
+              "error-handling"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Guide",
+            "pages": [
+              "api-reference/guide"
+            ]
+          },
+          {
+            "group": "API Group",
+            "openapi": {
+              "source": "api-reference/openapi.json",
+              "directory": "api-example"}
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "https://github.com/mta-tech",
+          "icon": "book-open-cover"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/mta-tech",
+          "icon": "github"
+        },
+        {
+          "anchor": "Profile",
+          "href": "https://www.linkedin.com/company/mtatechnology/",
+          "icon": "linkedin"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/ClaimMind-light.PNG",
+    "dark": "/logo/ClaimMind-light.PNG"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Privacy Policy",
+        "href": "https://www.mta.tech/privacy-policy"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Home",
+      "href": "https://github.com/mta-tech"
+    }
+  },
+  "contextual": {
+    "options": [
+     "copy",
+     "view",
+     "chatgpt",
+     "claude",
+     "perplexity",
+     "mcp",
+     "cursor",
+     "vscode"
+   ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/mta-tech",
+      "linkedin": "https://www.linkedin.com/company/mtatechnology/"
+    }
+  },
+  "redirects": [
+    {
+      "source": "C:/api-reference/:slug*",
+      "destination": "/api-reference/:slug*"
+    }
+  ]
+}

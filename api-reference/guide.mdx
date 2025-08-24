@@ -1,0 +1,189 @@
+---
+title: "API Guide"
+description: "A step-by-step guide to effectively use the ClaimMind API for medical claim processing."
+---
+
+## Overview
+
+The ClaimMind API is a powerful, automated platform designed to streamline and manage the complex processes involved in medical claim processing. This guide provides you with the essential information and steps to effectively interact with the API, from authentication to managing claims and integrating advanced workflows like OCR and ICD coding.
+
+By following this guide, you will learn how to leverage the API's capabilities to automate tasks, improve data accuracy, and ensure compliance in your medical claim operations.
+
+## Key Concepts
+
+To effectively use the ClaimMind API, it's important to understand its core components:
+
+*   **Claims**: The central entity representing a medical claim, including details like claim code, payer information, status, and financial plafon.
+*   **Payers & Payer Types**: Master data for insurance providers and other payment entities. Payer Types categorize payers (e.g., BPJS, Insurance, OOP).
+*   **Users & Organizations (Tenants)**: The API supports multi-tenancy, allowing different organizations to manage their claims independently. Users are managed within these organizations.
+*   **Workflows**: Automated sequences of operations, such as OCR, ICD coding, and claim validation, that process claim-related data.
+*   **OCR (Optical Character Recognition)**: The process of extracting text and data from scanned or image-based claim documents.
+*   **ICD (International Classification of Diseases)**: Medical classification codes used for diagnoses and procedures, which the API helps manage and validate.
+*   **Claim Validation**: Automated checks against predefined rules to ensure the accuracy and compliance of claims.
+
+## Authentication
+
+The ClaimMind API uses **OAuth2 Password Bearer** for authentication. You must obtain an access token by providing your `username` and `password` to the login endpoint. This `access_token` must then be included in the `Authorization` header of subsequent requests.
+
+### Step 1: Obtain an Access Token
+
+<Steps>
+<Step title="Send a login request">
+Make a `POST` request to the `/v1/auth/login` endpoint with your `username` and `password` in the request body (form-urlencoded).
+
+<CodeGroup>
+```bash
+curl -X POST "{api_base_url}/v1/auth/login" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-d "username=your_username&password=your_password"
+```
+
+```python
+import requests
+
+api_base_url = "https://mta.tech/claimmind" # Replace with your actual API base URL
+username = "your_username"
+password = "your_password"
+
+response = requests.post(
+    f"{api_base_url}/v1/auth/login",
+    data={"username": username, "password": password},
+    headers={"Content-Type": "application/x-www-form-urlencoded"}
+)
+access_token = response.json().get("access_token")
+print(f"Access Token: {access_token}")
+```
+</CodeGroup>
+
+<Check>
+A successful response will return an `access_token` and a `refresh_token`. Use the `access_token` for all subsequent authenticated API calls.
+</Check>
+</Step>
+</Steps>
+
+## Making API Requests
+
+Most API requests to ClaimMind require specific headers to identify your organization and user, in addition to the `Authorization` header.
+
+### Required Headers
+
+*   **`Authorization: Bearer YOUR_ACCESS_TOKEN`**: Your access token obtained from the login endpoint.
+*   **`X-Tenant-Id: YOUR_TENANT_ID`**: A unique identifier for your organization. This is crucial for multi-tenant operations.
+*   **`X-User-Id: YOUR_USER_ID`**: A unique identifier for the user making the request, often required for workflow-related actions.
+
+### Example: Listing Claims
+
+Let's demonstrate how to list claims, incorporating the necessary headers.
+
+<Steps>
+<Step title="Send a request to list claims">
+Make a `GET` request to the `/v1/claims` endpoint, including your `access_token` and `X-Tenant-Id`.
+
+<CodeGroup>
+```bash
+curl -X GET "{api_base_url}/v1/claims" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "X-Tenant-Id: YOUR_TENANT_ID"
+```
+
+```python
+import requests
+
+api_base_url = "https://mta.tech/claimmind" # Replace with your actual API base URL
+access_token = "YOUR_ACCESS_TOKEN" # Replace with your obtained access token
+tenant_id = "YOUR_TENANT_ID" # Replace with your actual tenant ID
+
+response = requests.get(
+    f"{api_base_url}/v1/claims",
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "X-Tenant-Id": tenant_id
+    }
+)
+print(response.json())
+```
+</CodeGroup>
+
+<Check>
+A successful response will return a list of claim objects associated with your tenant.
+</Check>
+</Step>
+</Steps>
+
+## Error Handling
+
+The ClaimMind API uses standard HTTP status codes to indicate the success or failure of an API request.
+
+*   **`2xx` Success**: Indicates that the request was successfully received, understood, and accepted.
+*   **`4xx` Client Error**: Indicates that there was an issue with the request from your end (e.g., `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `422 Unprocessable Entity` for validation errors).
+*   **`5xx` Server Error**: Indicates an issue on the API server's side.
+
+For `422 Unprocessable Entity` errors, the response body will typically contain a `detail` array with specific validation errors, helping you identify and correct issues in your request payload.
+
+## Workflow Integration
+
+The ClaimMind API allows you to trigger and manage various automated workflows, such as OCR processing, ICD coding, and claim validation. These workflows are typically initiated by `POST` requests to specific endpoints under `/v1/workflows/`.
+
+### Example: Triggering an OCR Workflow
+
+To trigger an OCR workflow for a specific claim, you would use the `/v1/workflows/workflows/runs` endpoint.
+
+<Steps>
+<Step title="Send a request to trigger OCR">
+Make a `POST` request to the `/v1/workflows/workflows/runs` endpoint, including your `access_token`, `X-Tenant-Id`, `X-User-Id`, and the `claim_id` along with any base64 encoded document data or raw input.
+
+<CodeGroup>
+```bash
+curl -X POST "{api_base_url}/v1/workflows/workflows/runs" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "X-Tenant-Id: YOUR_TENANT_ID" \
+-H "X-User-Id: YOUR_USER_ID" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "your_claim_id",
+  "base64": "base64_encoded_document_data"
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://mta.tech/claimmind" # Replace with your actual API base URL
+access_token = "YOUR_ACCESS_TOKEN" # Replace with your obtained access token
+tenant_id = "YOUR_TENANT_ID" # Replace with your actual tenant ID
+user_id = "YOUR_USER_ID" # Replace with your actual user ID
+claim_id = "your_claim_id" # Replace with an actual claim ID
+base64_document = "base64_encoded_document_data" # Replace with your document data
+
+ocr_trigger_data = {
+    "claim_id": claim_id,
+    "base64": base64_document
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/workflows/runs",
+    json=ocr_trigger_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "X-Tenant-Id": tenant_id,
+        "X-User-Id": user_id,
+        "Content-Type": "application/json"
+    }
+)
+print(response.json())
+```
+</CodeGroup>
+
+<Check>
+A successful response will indicate that the OCR workflow has been triggered. You can then monitor its progress and retrieve results using other workflow-related endpoints.
+</Check>
+</Step>
+</Steps>
+
+## Next Steps
+
+You are now equipped with a foundational understanding of the ClaimMind API.
+
+*   **Explore the API Reference**: Dive into the detailed documentation for each endpoint to understand all available operations, parameters, and response structures.
+*   **Implement Advanced Workflows**: Integrate the various OCR, ICD, and validation workflows into your applications to automate complex claim processing tasks.
+*   **Build Your Integration**: Start developing your custom solutions leveraging the full power of the ClaimMind API.

@@ -1,0 +1,152 @@
+---
+title: "Quickstart"
+description: "Get started quickly with the ClaimMind API for medical claim processing."
+---
+
+## Prerequisites
+
+Before you begin integrating with the ClaimMind API, ensure you have the following:
+
+*   **API Base URL**: The base URL for the ClaimMind API (e.g., `https://mta.tech/claimmind`).
+*   **Authentication Credentials**: Obtain your `username` and `password` for API authentication.
+*   **Tenant ID**: Your unique `X-Tenant-Id` header, required for most API calls to identify your organization.
+*   **User ID**: Your unique `X-User-Id` header, required for certain workflow-related API calls.
+
+## Making Your First API Call
+
+This section guides you through authenticating and making your first request to the ClaimMind API.
+
+### Step 1: Obtain an Access Token
+
+To interact with the ClaimMind API, you first need to authenticate and obtain an access token.
+
+<Steps>
+<Step title="Send a login request">
+Make a `POST` request to the `/v1/auth/login` endpoint with your `username` and `password`.
+
+<CodeGroup>
+```bash
+curl -X POST "{api_base_url}/v1/auth/login" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-d "username=your_username&password=your_password"
+```
+
+```python
+import requests
+
+api_base_url = "https://mta.tech/claimmind" # Replace with your actual API base URL
+username = "your_username"
+password = "your_password"
+
+response = requests.post(
+    f"{api_base_url}/v1/auth/login",
+    data={"username": username, "password": password},
+    headers={"Content-Type": "application/x-www-form-urlencoded"}
+)
+print(response.json())
+```
+</CodeGroup>
+
+<Check>
+A successful response will return an `access_token` and a `refresh_token`. Store the `access_token` securely, as it will be used for subsequent authenticated requests.
+</Check>
+</Step>
+</Steps>
+
+### Step 2: List Payer Types
+
+Once you have an access token, you can start making authenticated requests. Let's try listing the available payer types.
+
+<Steps>
+<Step title="Send a request to list payer types">
+Make a `GET` request to the `/v1/payer-type` endpoint, including your `access_token` in the `Authorization` header.
+
+<CodeGroup>
+```bash
+curl -X GET "{api_base_url}/v1/payer-type" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+```python
+import requests
+
+api_base_url = "https://mta.tech/claimmind" # Replace with your actual API base URL
+access_token = "YOUR_ACCESS_TOKEN" # Replace with your obtained access token
+
+response = requests.get(
+    f"{api_base_url}/v1/payer-type",
+    headers={"Authorization": f"Bearer {access_token}"}
+)
+print(response.json())
+```
+</CodeGroup>
+
+<Check>
+A successful response will return a list of payer types, such as `BPJS`, `Insurance`, or `OOP`.
+</Check>
+</Step>
+</Steps>
+
+### Step 3: Create a Claim
+
+Now, let's create a new medical claim. This requires your `X-Tenant-Id` header.
+
+<Steps>
+<Step title="Send a request to create a claim">
+Make a `POST` request to the `/v1/claims` endpoint, including your `access_token` and `X-Tenant-Id` header, along with the claim details in the request body.
+
+<CodeGroup>
+```bash
+curl -X POST "{api_base_url}/v1/claims" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "X-Tenant-Id: YOUR_TENANT_ID" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_code": "CLM-20250824-001",
+  "payer_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "payer_type": "insurance",
+  "payers_plafon": 5000000
+}'
+```
+
+```python
+import requests
+import uuid
+
+api_base_url = "https://mta.tech/claimmind" # Replace with your actual API base URL
+access_token = "YOUR_ACCESS_TOKEN" # Replace with your obtained access token
+tenant_id = "YOUR_TENANT_ID" # Replace with your actual tenant ID
+
+claim_data = {
+    "claim_code": "CLM-20250824-001",
+    "payer_id": str(uuid.uuid4()), # Replace with an actual payer ID
+    "payer_type": "insurance",
+    "payers_plafon": 5000000
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/claims",
+    json=claim_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "X-Tenant-Id": tenant_id,
+        "Content-Type": "application/json"
+    }
+)
+print(response.json())
+```
+</CodeGroup>
+
+<Check>
+A successful response will return the details of the newly created claim, including its unique `id`.
+</Check>
+</Step>
+</Steps>
+
+## Next Steps
+
+You've successfully made your first authenticated calls to the ClaimMind API. From here, you can:
+
+*   **Explore More Endpoints**: Refer to the [API Reference](/api-reference/introduction) for a complete list of available endpoints and their functionalities.
+*   **Integrate Workflows**: Learn how to trigger and manage OCR, ICD coding, and claim validation workflows.
+*   **Develop Your Application**: Start building your application using the ClaimMind API to automate your medical claim processing.

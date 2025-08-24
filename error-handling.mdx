@@ -1,0 +1,73 @@
+---
+title: "Error Handling"
+description: "Understand common error codes and troubleshooting steps for the ClaimMind API."
+---
+
+## Overview
+
+Effective error handling is crucial for building robust integrations with the ClaimMind API. This guide provides an overview of the common HTTP status codes you may encounter, their meanings within the API's context, and practical advice for troubleshooting issues.
+
+## HTTP Status Codes
+
+The ClaimMind API utilizes standard HTTP status codes to communicate the outcome of your requests.
+
+### 2xx Success Codes
+These codes indicate that your request was successfully received, understood, and processed.
+
+*   **`200 OK`**: The request was successful, and the response body contains the requested data or confirmation of the action.
+*   **`201 Created`**: The request was successful, and a new resource was created as a result (e.g., after creating a new claim or payer).
+
+### 4xx Client Error Codes
+These codes indicate that there was an issue with your request, and you typically need to modify your request before retrying.
+
+*   **`400 Bad Request`**: The server cannot process the request due to a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+*   **`401 Unauthorized`**: Authentication is required and has failed or has not yet been provided. This usually means your `access_token` is missing, invalid, or expired.
+    *   **Troubleshooting**: Ensure your `Authorization: Bearer YOUR_ACCESS_TOKEN` header is correctly set with a valid and unexpired token. If your token has expired, use the `/v1/auth/refresh` endpoint to obtain a new one.
+*   **`403 Forbidden`**: The server understood the request but refuses to authorize it. This often means your authenticated user does not have the necessary permissions to perform the requested action, even if authenticated.
+    *   **Troubleshooting**: Verify the roles and permissions assigned to the user associated with your `access_token`. Contact your administrator if you believe this is an error.
+*   **`404 Not Found`**: The requested resource could not be found on the server. This can happen if the URL path is incorrect or if the resource (e.g., a specific `claim_id`) does not exist.
+    *   **Troubleshooting**: Double-check the endpoint URL and any path parameters (like `claim_id` or `payer_id`) to ensure they are correct and refer to existing resources.
+*   **`422 Unprocessable Entity`**: The server understands the content type of the request entity, and the syntax of the request entity is correct, but it was unable to process the contained instructions. This typically indicates a validation error with the data you sent in the request body.
+    *   **Troubleshooting**: The API response for a `422` error will usually include a `detail` field containing an array of specific validation errors. Examine this `detail` array to identify which fields are incorrect or missing and adjust your request payload accordingly.
+
+    <CodeGroup>
+    ```json
+    {
+      "detail": [
+        {
+          "loc": [
+            "body",
+            "claim_code"
+          ],
+          "msg": "field required",
+          "type": "value_error.missing"
+        },
+        {
+          "loc": [
+            "body",
+            "payer_id"
+          ],
+          "msg": "value is not a valid uuid",
+          "type": "value_error.uuid"
+        }
+      ]
+    }
+    ```
+    </CodeGroup>
+    In this example, `claim_code` is missing, and `payer_id` is not a valid UUID.
+
+### 5xx Server Error Codes
+These codes indicate that the server encountered an unexpected condition that prevented it from fulfilling the request. These errors are typically not due to your request but rather an issue on the API server's side.
+
+*   **`500 Internal Server Error`**: A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+    *   **Troubleshooting**: While these errors are server-side, you can ensure your request is well-formed and retry the request. If the issue persists, report it to the ClaimMind support team with the request details (timestamp, endpoint, request body if applicable).
+*   **`503 Service Unavailable`**: The server is currently unable to handle the request due to temporary overloading or maintenance of the server.
+    *   **Troubleshooting**: This is usually a temporary condition. Wait a short period and retry your request.
+
+## General Troubleshooting Tips
+
+*   **Check Request Headers**: Ensure all required headers (`Authorization`, `X-Tenant-Id`, `X-User-Id`) are correctly set.
+*   **Validate Request Body**: For `POST` and `PUT` requests, ensure your JSON payload matches the expected schema. Refer to the [Data Models Overview](/data-models-overview) and the OpenAPI specification for correct structures.
+*   **Review API Reference**: Consult the [API Reference](/api-reference/introduction) for specific endpoint requirements, parameters, and expected responses.
+*   **Log Details**: When encountering errors, log the full request (method, URL, headers, body) and the full response (status code, headers, body) to aid in debugging.
+*   **Contact Support**: If you've exhausted troubleshooting steps and believe the issue is on the API side, provide detailed logs and context to the ClaimMind support team.
