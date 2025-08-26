@@ -11,40 +11,32 @@ Understanding these data models is crucial for designing your applications to in
 
 ## Core Data Models
 
-### Claim
-Represents a single medical claim within the ClaimMind system.
+### OCRClaimsRequest
+Used to create a new claim record in the system.
 
-*   **`id` (UUID)**: Unique identifier for the claim.
-*   **`claim_code` (String)**: A human-readable code for the claim.
-*   **`payer_id` (UUID)**: Identifier of the associated payer.
-*   **`payer_type` (String)**: The type of payer (e.g., "insurance", "bpjs").
-*   **`status` (String)**: Current status of the claim (e.g., "open", "pending", "closed").
-*   **`payers_plafon` (Number)**: The financial limit or ceiling set by the payer for this claim.
-*   **`tenant_id` (UUID)**: The organization (tenant) to which this claim belongs.
-*   **`icd_final` (String, Optional)**: The final ICD code assigned to the claim after processing.
-*   **`created_at` (DateTime)**: Timestamp when the claim was created.
-*   **`updated_at` (DateTime)**: Timestamp when the claim was last updated.
+*   **`claim_id` (String)**: A unique identifier for the claim.
+*   **`claim_code` (String, Optional)**: A human-readable code for the claim.
 
-### Payer
-Represents an insurance provider or other payment entity.
+### OCRTriggerRequest
+Used to trigger an OCR workflow for a claim, typically for PII extraction.
 
-*   **`id` (UUID)**: Unique identifier for the payer.
-*   **`name` (String)**: Name of the payer.
-*   **`payer_type` (String)**: The type of this payer (e.g., "insurance", "bpjs").
-*   **`type_description` (String, Optional)**: Description of the payer type.
-*   **`description` (String, Optional)**: General description of the payer.
-*   **`contact_info` (String, Optional)**: Contact details for the payer.
-*   **`status` (String, Optional)**: Current status of the payer (e.g., "active", "inactive").
-*   **`created_at` (DateTime, Optional)**: Timestamp when the payer record was created.
+*   **`claim_id` (String)**: The identifier of the claim to process.
+*   **`claim_code` (String, Optional)**: A human-readable code for the claim.
+*   **`base64` (String, Optional)**: A base64 encoded string of the document to be processed.
+*   **`raw_input` (String, Optional)**: Raw text input to be processed.
+*   **`workflow_id` (String, Optional)**: An existing workflow ID to use.
 
-### PayerType
-Categorizes different types of payers.
+### OCRTriggerResponse
+The generic response structure when a workflow like claim creation or OCR is triggered.
 
-*   **`id` (Integer)**: Unique identifier for the payer type.
-*   **`code` (String)**: A short, unique code for the payer type (e.g., "bpjs", "insurance", "oop").
-*   **`description` (String)**: A descriptive name for the payer type.
+*   **`claim_id` (UUID, Optional)**: The claim ID that was processed.
+*   **`tenant_id` (UUID, Optional)**: The organization (tenant) to which this claim belongs.
+*   **`status` (String, Optional)**: The status of the workflow.
+*   **`message` (String, Optional)**: A descriptive message about the workflow status.
+*   **`workflow_id` (String, Optional)**: The ID of the workflow run that was initiated.
+*   **`result` (Object, Optional)**: The detailed result of the processing.
 
-### User
+### UserResponse
 Represents a user within an organization (tenant).
 
 *   **`id` (UUID)**: Unique identifier for the user.
@@ -58,27 +50,22 @@ Represents a user within an organization (tenant).
 *   **`channel_access` (Array of Strings, Optional)**: List of channels the user has access to.
 *   **`status` (String)**: User's account status (e.g., "active", "inactive").
 
-### WorkflowRun
-Details an instance of an executed automated workflow.
+### TenantResponse
+Represents a tenant (organization) in the system.
 
-*   **`claim_id` (UUID)**: The claim associated with this workflow run.
-*   **`document_id` (UUID)**: The document processed by this workflow run.
-*   **`goal_code` (String)**: The primary goal of the workflow (e.g., "OCR", "ICD_CODER", "VALIDATION").
-*   **`version` (Integer)**: Version of the workflow definition used.
-*   **`trigger_type` (String)**: How the workflow was initiated (e.g., "manual", "auto").
+*   **`id` (UUID)**: Unique identifier for the tenant.
+*   **`name` (String)**: Name of the tenant.
+*   **`domain` (String, Optional)**: The domain associated with the tenant.
 
-### OCRFullResponse
-The response structure for a full OCR process initiation.
+### ClaimValidatorRequest
+The payload for triggering a claim validation workflow.
 
-*   **`claim_id` (UUID)**: The claim ID for which OCR was initiated.
-*   **`workflow_id` (String)**: The ID of the workflow run that handles this OCR process.
-*   **`result` (String)**: A summary or status of the OCR initiation.
-*   **`version` (Integer)**: The version of the OCR result.
+*   **`input_data` (Object)**: An object containing the data needed for validation, including `claim_id`, `tenant_id`, `claim_markdown`, and `patient_profile`.
 
 ### ClaimValidatorResponse
-The response structure for triggering a claim validation.
+The response structure after triggering a claim validation.
 
-*   **`claim_id` (UUID, Optional)**: The claim ID that was validated.
+*   **`claim_id` (String, Optional)**: The claim ID that was validated.
 *   **`workflow_id` (String, Optional)**: The ID of the workflow run for this validation.
 *   **`status` (String, Optional)**: The status of the validation process.
 *   **`result` (Object, Optional)**: The detailed result of the claim validation.
@@ -91,9 +78,9 @@ The payload for pushing ICD results to a claim.
 
 ## Relationships
 
-*   A **Claim** is associated with a **Payer** and a **PayerType**.
+*   A **Claim** is identified by a `claim_id` and is the central entity for workflows.
+*   Workflows like **OCR**, **Validation**, and **ICD Coding** are triggered for a specific **Claim**.
 *   **Users** belong to a **Tenant** (Organization).
-*   **WorkflowRuns** are typically initiated for a specific **Claim** and may process a **Document**.
-*   **OCRFullResponse**, **ClaimValidatorResponse**, and **ICDResultPushRequest** are all related to the processing and validation of a **Claim**.
+*   Responses like **OCRTriggerResponse** and **ClaimValidatorResponse** provide the status and `workflow_id` for the initiated processes.
 
 This overview should provide a solid foundation for understanding the data structures within the ClaimMind API. For precise field definitions and constraints, always refer to the OpenAPI specification.

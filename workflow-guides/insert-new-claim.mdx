@@ -13,18 +13,16 @@ This guide outlines the process of inserting a new claim into the system, includ
 
 <Steps>
 <Step title="1. Create a New Claim">
-Initiate a new claim record in the system to obtain a `claim_id`.
+Initiate a new claim record in the system by providing a unique `claim_id` and an optional `claim_code`.
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/claims/create" \
+curl -X POST "{api_base_url}/v1/claims/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
-  "claim_code": "NEW-CLAIM-001",
-  "payer_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-  "payer_type": "insurance",
-  "payers_plafon": 5000000
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "claim_code": "NEW-CLAIM-001"
 }'
 ```
 
@@ -32,14 +30,12 @@ curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/clai
 import requests
 import uuid
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
-access_token = "YOUR_ACCESS_TOKEN"
+api_base_url = "{api_base_url}" # Replace with your actual API base URL
+access_token = "YOUR_ACCESS_TOKEN" # Replace with your actual access token
 
 claim_data = {
-    "claim_code": "NEW-CLAIM-001",
-    "payer_id": str(uuid.uuid4()), # Replace with an actual payer ID
-    "payer_type": "insurance",
-    "payers_plafon": 5000000
+    "claim_id": str(uuid.uuid4()), # Generate a unique UUID for the claim_id
+    "claim_code": "NEW-CLAIM-001"
 }
 
 response = requests.post(
@@ -50,12 +46,37 @@ response = requests.post(
         "Content-Type": "application/json"
     }
 )
-claim_id = response.json().get("id")
-print(f"Created Claim ID: {claim_id}")
+response_json = response.json()
+claim_id = response_json.get("claim_id")
+workflow_id = response_json.get("workflow_id")
+print(f"Created Claim ID: {claim_id}, Workflow ID: {workflow_id}")
 ```
 </CodeGroup>
+
+<RequestExample>
+```json
+{
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "claim_code": "NEW-CLAIM-001"
+}
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "tenant_id": "your-tenant-id",
+  "status": "success",
+  "message": "Claim created successfully",
+  "workflow_id": "some-workflow-id",
+  "result": {}
+}
+```
+</ResponseExample>
+
 <Check>
-You should receive a `200 OK` response with the new claim's `id`.
+You should receive a `200 OK` response with the new claim's `claim_id` and `workflow_id`.
 </Check>
 </Step>
 
@@ -64,11 +85,11 @@ Submit the claim document for OCR processing to extract Personally Identifiable 
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/ocr/pii/create" \
+curl -X POST "{api_base_url}/v1/workflows/ocr/pii/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
-  "claim_id": "YOUR_CLAIM_ID",
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
   "base64": "BASE64_ENCODED_DOCUMENT_DATA"
 }'
 ```
@@ -76,9 +97,9 @@ curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/work
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
-access_token = "YOUR_ACCESS_TOKEN"
-claim_id = "YOUR_CLAIM_ID" # Use the claim_id from Step 1
+api_base_url = "{api_base_url}" # Replace with your actual API base URL
+access_token = "YOUR_ACCESS_TOKEN" # Replace with your actual access token
+claim_id = "a1b2c3d4-e5f6-7890-1234-567890abcdef" # Use the claim_id from Step 1
 base64_document = "BASE64_ENCODED_DOCUMENT_DATA" # Replace with your actual base64 document data
 
 ocr_pii_data = {
@@ -94,9 +115,33 @@ response = requests.post(
         "Content-Type": "application/json"
     }
 )
-print(f"OCR for PII Triggered. Response: {response.json()}")
+response_json = response.json()
+print(f"OCR for PII Triggered. Response: {response_json}")
 ```
 </CodeGroup>
+
+<RequestExample>
+```json
+{
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "base64": "BASE64_ENCODED_DOCUMENT_DATA"
+}
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "tenant_id": "your-tenant-id",
+  "status": "success",
+  "message": "OCR PII workflow initiated successfully",
+  "workflow_id": "some-workflow-id",
+  "result": {}
+}
+```
+</ResponseExample>
+
 <Check>
 You should receive a `200 OK` response indicating the PII OCR workflow has been initiated.
 </Check>
