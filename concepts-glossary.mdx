@@ -12,15 +12,11 @@ This section provides definitions for essential terms and concepts related to th
 ### Claim Lifecycle
 The complete journey of a medical claim, from its initial submission and processing through various stages like OCR, medical coding, validation, and final resolution. The ClaimMind API supports and automates various steps within this lifecycle.
 
-
 ### ICD-10 (International Classification of Diseases, Tenth Revision)
 A globally recognized system of medical classification codes used to report diagnoses and procedures. The ClaimMind API integrates with ICD coding to ensure accurate and compliant claim processing.
 
 ### OCR Blocks
 In the context of Optical Character Recognition (OCR), "blocks" refer to structured segments of text or data identified and extracted from a document. These blocks can represent specific fields, paragraphs, or tables.
-
-### Tenant
-In a multi-tenant architecture, a "tenant" represents a distinct group of users or an organization that shares the same software application but has its own isolated data and configurations. The ClaimMind API supports multiple tenants (organizations) managing their claims independently.
 
 ### Workflow Run
 An instance of an automated process or sequence of tasks executed within the ClaimMind API. Workflows can include steps like OCR processing, ICD coding, and claim validation, and each execution is logged as a "workflow run."
@@ -28,12 +24,10 @@ An instance of an automated process or sequence of tasks executed within the Cla
 ## Glossary
 
 *   **Access Token**: A credential that grants access to protected API resources. Obtained after successful user authentication.
-*   **API Base URL**: The root URL for all API endpoints (e.g., `https://mta.tech/claimmind`).
+*   **API Base URL**: The root URL for all API endpoints (e.g., `https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service`).
 *   **Claim Code**: A unique identifier assigned to a medical claim within the system.
 *   **Claim ID**: A universally unique identifier (UUID) for a specific claim.
 *   **Claim Validation**: The automated process of checking a claim against a set of predefined rules to ensure accuracy, completeness, and compliance.
 *   **HTTP Status Codes**: Standardized codes returned by the API to indicate the success or failure of a request (e.g., 200 OK, 401 Unauthorized, 422 Unprocessable Entity).
 *   **OCR (Optical Character Recognition)**: Technology used to convert different types of documents, such as scanned paper documents, PDFs, or images, into editable and searchable data.
-*   **Payer**: An entity responsible for paying medical claims, such as an insurance company, government program (e.g., BPJS), or the patient themselves (out-of-pocket).
-*   **Payer Type**: A categorization of payers (e.g., "insurance," "bpjs," "oop").
 *   **Refresh Token**: A long-lived credential used to obtain new access tokens without requiring the user to re-authenticate.
