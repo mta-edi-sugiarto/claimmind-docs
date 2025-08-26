@@ -35,6 +35,11 @@
             "group": "How-To Guides",
             "pages": [
               "workflow-guides",
+              "workflow-guides/getting-general-information",
+              "workflow-guides/insert-new-claim",
+              "workflow-guides/retrieve-documents-information",
+              "workflow-guides/process-icd",
+              "workflow-guides/process-claim-validation",
               "error-handling"
             ]
           }
@@ -43,12 +48,6 @@
       {
         "tab": "API Reference",
         "groups": [
-          {
-            "group": "Guide",
-            "pages": [
-              "api-reference/guide"
-            ]
-          },
           {
             "group": "API Group",
             "openapi": {

@@ -1,0 +1,100 @@
+---
+title: "Retrieve Documents Information"
+description: "Guide to processing documents with OCR for Markdown and saving the results."
+---
+
+## Overview
+
+This guide details the process of retrieving and processing document information, specifically focusing on using OCR to extract markdown content and then saving these results.
+
+### Prerequisites
+*   An authenticated `access_token`.
+*   A `claim_id` associated with the document.
+*   A base64 encoded document.
+
+<Steps>
+<Step title="1. Process OCR for Markdown">
+Trigger the OCR workflow to extract markdown content from a document associated with a claim.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/ocr/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "YOUR_CLAIM_ID",
+  "base64_list": ["BASE64_ENCODED_DOCUMENT_DATA"]
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+base64_document = "BASE64_ENCODED_DOCUMENT_DATA" # Replace with your actual base64 document data
+
+ocr_markdown_data = {
+    "claim_id": claim_id,
+    "base64_list": [base64_document]
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/ocr/create",
+    json=ocr_markdown_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"OCR for Markdown Triggered. Response: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response indicating the OCR workflow for markdown extraction has been initiated.
+</Check>
+</Step>
+
+<Step title="2. Save Markdown Revisions">
+After the OCR process completes, save the extracted markdown as revisions.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/ocr/revisions" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "YOUR_CLAIM_ID",
+  "full_text_markdown": "## Document Title\\n\\nThis is the extracted markdown content from the document."
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+
+ocr_revision_data = {
+    "claim_id": claim_id,
+    "full_text_markdown": "## Document Title\n\nThis is the extracted markdown content from the document." # Replace with actual OCR result
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/ocr/revisions",
+    json=ocr_revision_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"OCR Revisions Saved. Response: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response confirming the OCR revisions have been saved.
+</Check>
+</Step>
+</Steps>

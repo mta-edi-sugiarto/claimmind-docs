@@ -1,0 +1,154 @@
+---
+title: "Process Claim Validation"
+description: "A guide to retrieving ICD information, searching for validation rules, and creating a claim validation."
+---
+
+## Overview
+
+This guide details the workflow for processing claim validation, including retrieving ICD information, fetching validation rules, and triggering the validation process for a claim.
+
+### Prerequisites
+*   An authenticated `access_token`.
+*   A `claim_id` for the claim to be validated.
+
+<Steps>
+<Step title="1. Get ICD Information for Claim">
+Retrieve the ICD information associated with a specific claim.
+
+<CodeGroup>
+```bash
+curl -X GET "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/icd/fetch-result/{claim_id}" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+
+response = requests.get(
+    f"{api_base_url}/v1/workflows/icd/fetch-result/{claim_id}",
+    headers={
+        "Authorization": f"Bearer {access_token}"
+    }
+)
+print(f"ICD Information: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response with the claim's ICD details.
+</Check>
+</Step>
+
+<Step title="2. Search for Validation Rules">
+Retrieve the set of validation rules that will be applied during the claim validation process.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/validation/rules" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "tenant_id": "YOUR_TENANT_ID",
+  "patient_profile": {
+    "icd10_list": [],
+    "icd9_list": [],
+    "ina_cbg": null
+  }
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+tenant_id = "YOUR_TENANT_ID" # Replace with your tenant ID
+
+validation_rules_data = {
+    "tenant_id": tenant_id,
+    "patient_profile": {
+        "icd10_list": [],
+        "icd9_list": [],
+        "ina_cbg": None
+    }
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/validation/rules",
+    json=validation_rules_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"Validation Rules: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response with the list of validation rules.
+</Check>
+</Step>
+
+<Step title="3. Create Validation">
+Trigger the claim validation process using the retrieved claim information and rules.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/validation/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "input_data": {
+    "claim_id": "YOUR_CLAIM_ID",
+    "tenant_id": "YOUR_TENANT_ID",
+    "claim_markdown": "Extracted markdown content from OCR (or manual input)",
+    "patient_profile": {
+      "icd10_list": [],
+      "icd9_list": [],
+      "ina_cbg": null
+    }
+  }
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Use the claim_id from Step 1
+tenant_id = "YOUR_TENANT_ID" # Replace with your tenant ID
+claim_markdown_content = "This is the extracted text from the claim document." # Replace with actual OCR result
+
+validation_data = {
+    "input_data": {
+        "claim_id": claim_id,
+        "tenant_id": tenant_id,
+        "claim_markdown": claim_markdown_content,
+        "patient_profile": {
+            "icd10_list": [],
+            "icd9_list": [],
+            "ina_cbg": None
+        }
+    }
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/validation/create",
+    json=validation_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"Claim Validation Triggered. Response: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response indicating the validation workflow has been triggered.
+</Check>
+</Step>
+</Steps>

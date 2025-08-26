@@ -1,0 +1,71 @@
+---
+title: "Getting General Information"
+description: "Learn how to retrieve user profiles and table data from the ClaimMind API."
+---
+
+## Overview
+
+This guide provides steps on how to retrieve general information, including user profiles and various table data, using the ClaimMind API.
+
+### Prerequisites
+*   An authenticated `access_token`.
+
+<Steps>
+<Step title="1. Get User Profile">
+Retrieve the profile information for a specific user.
+
+<CodeGroup>
+```bash
+curl -X GET "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/auth/whoami" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+
+response = requests.get(
+    f"{api_base_url}/v1/auth/whoami",
+    headers={
+        "Authorization": f"Bearer {access_token}"
+    }
+)
+print(f"User Profile: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response with the user's profile details.
+</Check>
+</Step>
+
+<Step title="2. Get Table Data (Example: List Claims)">
+Retrieve a list of claims. This can be adapted for other table data by changing the endpoint.
+
+<CodeGroup>
+```bash
+curl -X GET "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/claims/get-all" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+
+response = requests.get(
+    f"{api_base_url}/v1/claims/get-all",
+    headers={
+        "Authorization": f"Bearer {access_token}"
+    }
+)
+print(f"List of Claims: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response with a list of claims or other requested table data.
+</Check>
+</Step>
+</Steps>

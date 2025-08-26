@@ -1,0 +1,105 @@
+---
+title: "Insert New Claim"
+description: "A workflow for creating a new claim, processing PII with OCR, and saving claim information."
+---
+
+## Overview
+
+This guide outlines the process of inserting a new claim into the system, including processing Personally Identifiable Information (PII) using OCR and saving the claim details.
+
+### Prerequisites
+*   An authenticated `access_token`.
+*   A base64 encoded document containing claim information.
+
+<Steps>
+<Step title="1. Create a New Claim">
+Initiate a new claim record in the system to obtain a `claim_id`.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/claims/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_code": "NEW-CLAIM-001",
+  "payer_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "payer_type": "insurance",
+  "payers_plafon": 5000000
+}'
+```
+
+```python
+import requests
+import uuid
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+
+claim_data = {
+    "claim_code": "NEW-CLAIM-001",
+    "payer_id": str(uuid.uuid4()), # Replace with an actual payer ID
+    "payer_type": "insurance",
+    "payers_plafon": 5000000
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/claims/create",
+    json=claim_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+claim_id = response.json().get("id")
+print(f"Created Claim ID: {claim_id}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response with the new claim's `id`.
+</Check>
+</Step>
+
+<Step title="2. Process OCR for PII">
+Submit the claim document for OCR processing to extract Personally Identifiable Information (PII).
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/ocr/pii/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "YOUR_CLAIM_ID",
+  "base64": "BASE64_ENCODED_DOCUMENT_DATA"
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Use the claim_id from Step 1
+base64_document = "BASE64_ENCODED_DOCUMENT_DATA" # Replace with your actual base64 document data
+
+ocr_pii_data = {
+    "claim_id": claim_id,
+    "base64": base64_document
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/ocr/pii/create",
+    json=ocr_pii_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"OCR for PII Triggered. Response: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response indicating the PII OCR workflow has been initiated.
+</Check>
+</Step>
+
+</Steps>

@@ -1,0 +1,110 @@
+---
+title: "Process ICD"
+description: "A guide to processing ICD codes for a claim."
+---
+
+## Overview
+
+This guide details the workflow for processing International Classification of Diseases (ICD) codes for a specific claim.
+
+### Prerequisites
+*   An authenticated `access_token`.
+*   A `claim_id`.
+
+<Steps>
+<Step title="1. Process ICD">
+Trigger the ICD workflow for a specific claim.
+
+<CodeGroup>
+```bash
+curl -X POST "<BASE_URL>/v1/workflows/icd/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+    "module": "MODULE_ICD",
+    "input_data": {
+        "claim_id": "YOUR_CLAIM_ID"
+    }
+}'
+```
+
+```python
+import requests
+
+api_base_url = "<BASE_URL>"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+
+icd_process_data = {
+    "module": "MODULE_ICD",
+    "input_data": {
+        "claim_id": claim_id
+    }
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/icd/create",
+    json=icd_process_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"ICD Processing Triggered. Response: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response indicating the ICD processing workflow has been initiated.
+</Check>
+</Step>
+
+<Step title="2. Submit ICD Codes">
+Submit the processed ICD codes to be associated with the claim.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/icd/submit" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "YOUR_CLAIM_ID",
+  "patient_profile": {
+    "icd10_list": [{"code": "I10", "description": "Essential (primary) hypertension"}],
+    "icd9_list": [],
+    "ina_cbg": null
+  }
+}'
+```
+
+```python
+import requests
+
+api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+access_token = "YOUR_ACCESS_TOKEN"
+claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+
+icd_submit_data = {
+    "claim_id": claim_id,
+    "patient_profile": {
+        "icd10_list": [{"code": "I10", "description": "Essential (primary) hypertension"}], # Example ICD codes
+        "icd9_list": [],
+        "ina_cbg": None
+    }
+}
+
+response = requests.post(
+    f"{api_base_url}/v1/workflows/icd/submit",
+    json=icd_submit_data,
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+)
+print(f"ICD Codes Submitted. Response: {response.json()}")
+```
+</CodeGroup>
+<Check>
+You should receive a `200 OK` response confirming the ICD codes have been submitted.
+</Check>
+</Step>
+</Steps>

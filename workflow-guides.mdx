@@ -9,122 +9,83 @@ The ClaimMind API orchestrates complex medical claim processing through a series
 
 These guides are designed to help you understand the flow of data and operations, enabling you to integrate ClaimMind workflows seamlessly into your applications.
 
+## Available Workflows
+
+Here are the detailed workflow guides:
+
+*   [Getting General Information](/workflow-guides/getting-general-information)
+*   [Insert New Claim](/workflow-guides/insert-new-claim)
+*   [Retrieve Documents Information](/workflow-guides/retrieve-documents-information)
+*   [Process ICD](/workflow-guides/process-icd)
+*   [Process Claim Validation](/workflow-guides/process-claim-validation)
+
 ## End-to-End Workflow: Claim Submission to Validation
 
-This guide illustrates the typical workflow for submitting a new claim, processing its associated documents via OCR, and then triggering a validation process.
+This guide illustrates the typical workflow for submitting a new claim, processing its associated documents via OCR, processing ICD codes, and then triggering a validation process.
 
 ### Prerequisites
 *   An authenticated `access_token`.
-*   Your `X-Tenant-Id` and `X-User-Id`.
 *   A base64 encoded document (e.g., a scanned medical bill or insurance form) to be processed.
 
 <Steps>
-<Step title="1. Create a New Claim">
+<Step title="1. Insert New Claim">
 First, create a new claim in the system. This will provide you with a `claim_id` that you will use for subsequent workflow steps.
 
 <CodeGroup>
 ```bash
-curl -X POST "{api_base_url}/v1/claims" \
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/claims/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
--H "X-Tenant-Id: YOUR_TENANT_ID" \
 -H "Content-Type: application/json" \
 -d '{
-  "claim_code": "CLM-WORKFLOW-001",
+  "claim_code": "NEW-CLAIM-001",
   "payer_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
   "payer_type": "insurance",
-  "payers_plafon": 7500000
+  "payers_plafon": 5000000
 }'
 ```
-
-```python
-import requests
-import uuid
-
-api_base_url = "https://mta.tech/claimmind"
-access_token = "YOUR_ACCESS_TOKEN"
-tenant_id = "YOUR_TENANT_ID"
-
-claim_data = {
-    "claim_code": "CLM-WORKFLOW-001",
-    "payer_id": str(uuid.uuid4()), # Replace with an actual payer ID
-    "payer_type": "insurance",
-    "payers_plafon": 7500000
-}
-
-response = requests.post(
-    f"{api_base_url}/v1/claims",
-    json=claim_data,
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "X-Tenant-Id": tenant_id,
-        "Content-Type": "application/json"
-    }
-)
-claim_id = response.json().get("id")
-print(f"Created Claim ID: {claim_id}")
-```
 </CodeGroup>
-<Check>
-You should receive a `200 OK` response with the details of the newly created claim, including its `id`.
-</Check>
 </Step>
 
-<Step title="2. Trigger OCR for the Claim Document">
+<Step title="2. Retrieve Documents Information">
 With the `claim_id`, you can now trigger the OCR workflow to process the claim's associated document. Provide the document as a base64 encoded string.
 
 <CodeGroup>
 ```bash
-curl -X POST "{api_base_url}/v1/workflows/workflows/runs" \
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/ocr/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
--H "X-Tenant-Id: YOUR_TENANT_ID" \
--H "X-User-Id: YOUR_USER_ID" \
 -H "Content-Type: application/json" \
 -d '{
   "claim_id": "YOUR_CLAIM_ID",
-  "base64": "BASE64_ENCODED_DOCUMENT_DATA"
+  "base64_list": ["BASE64_ENCODED_DOCUMENT_DATA"]
 }'
 ```
-
-```python
-import requests
-
-api_base_url = "https://mta.tech/claimmind"
-access_token = "YOUR_ACCESS_TOKEN"
-tenant_id = "YOUR_TENANT_ID"
-user_id = "YOUR_USER_ID"
-claim_id = "YOUR_CLAIM_ID" # Use the claim_id from Step 1
-base64_document = "BASE64_ENCODED_DOCUMENT_DATA" # Replace with your actual base64 document data
-
-ocr_trigger_data = {
-    "claim_id": claim_id,
-    "base64": base64_document
-}
-
-response = requests.post(
-    f"{api_base_url}/v1/workflows/workflows/runs",
-    json=ocr_trigger_data,
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "X-Tenant-Id": tenant_id,
-        "X-User-Id": user_id,
-        "Content-Type": "application/json"
-    }
-)
-workflow_id = response.json().get("workflow_id")
-print(f"OCR Workflow Triggered. Workflow ID: {workflow_id}")
-```
 </CodeGroup>
-<Check>
-You should receive a `200 OK` response indicating the OCR workflow has been initiated, along with a `workflow_id`.
-</Check>
 </Step>
 
-<Step title="3. Trigger Claim Validation">
-After OCR processing (which might happen asynchronously), you can trigger the claim validation workflow. This will check the claim against predefined rules.
+<Step title="3. Process ICD">
+After OCR processing, you can trigger the ICD processing workflow.
 
 <CodeGroup>
 ```bash
-curl -X POST "{api_base_url}/v1/claim-validator/claim_validator/trigger" \
+curl -X POST "http://api.vm01-ext.claimmind.dev.keycenter.ai/v1/workflows/icd/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+    "module": "MODULE_ICD",
+    "input_data": {
+        "claim_id": "YOUR_CLAIM_ID"
+    }
+}'
+```
+</CodeGroup>
+</Step>
+
+<Step title="4. Process Claim Validation">
+Finally, trigger the claim validation workflow. This will check the claim against predefined rules.
+
+<CodeGroup>
+```bash
+curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/validation/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
@@ -140,142 +101,6 @@ curl -X POST "{api_base_url}/v1/claim-validator/claim_validator/trigger" \
   }
 }'
 ```
-
-```python
-import requests
-
-api_base_url = "https://mta.tech/claimmind"
-access_token = "YOUR_ACCESS_TOKEN"
-tenant_id = "YOUR_TENANT_ID"
-claim_id = "YOUR_CLAIM_ID" # Use the claim_id from Step 1
-claim_markdown_content = "This is the extracted text from the claim document." # Replace with actual OCR result
-
-validation_data = {
-    "input_data": {
-        "claim_id": claim_id,
-        "tenant_id": tenant_id,
-        "claim_markdown": claim_markdown_content,
-        "patient_profile": {
-            "icd10_list": [],
-            "icd9_list": [],
-            "ina_cbg": None
-        }
-    }
-}
-
-response = requests.post(
-    f"{api_base_url}/v1/claim-validator/claim_validator/trigger",
-    json=validation_data,
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    }
-)
-print(f"Claim Validation Triggered. Response: {response.json()}")
-```
 </CodeGroup>
-<Check>
-You should receive a `200 OK` response indicating the validation workflow has been triggered, along with its status and a `workflow_id`.
-</Check>
-</Step>
-</Steps>
-
-## Managing Payer Data Integration
-
-This guide demonstrates how to manage payer information, from creating new payer types to registering individual payers.
-
-### Prerequisites
-*   An authenticated `access_token`.
-*   Your `X-Tenant-Id`.
-
-<Steps>
-<Step title="1. Create a New Payer Type">
-Define a new category for payers, such as "Government Insurance" or "Private Health Fund".
-
-<CodeGroup>
-```bash
-curl -X POST "{api_base_url}/v1/payer-type" \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
--H "Content-Type: application/json" \
--d '{
-  "code": "gov_ins",
-  "description": "Government Insurance Schemes"
-}'
-```
-
-```python
-import requests
-
-api_base_url = "https://mta.tech/claimmind"
-access_token = "YOUR_ACCESS_TOKEN"
-
-payer_type_data = {
-    "code": "gov_ins",
-    "description": "Government Insurance Schemes"
-}
-
-response = requests.post(
-    f"{api_base_url}/v1/payer-type",
-    json=payer_type_data,
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    }
-)
-print(f"Created Payer Type: {response.json()}")
-```
-</CodeGroup>
-<Check>
-A `201 Created` response with the details of the new payer type.
-</Check>
-</Step>
-
-<Step title="2. Create a New Payer">
-Register a specific payer under an existing payer type.
-
-<CodeGroup>
-```bash
-curl -X POST "{api_base_url}/v1/payers" \
--H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
--H "X-Tenant-Id: YOUR_TENANT_ID" \
--H "Content-Type: application/json" \
--d '{
-  "name": "National Health Service",
-  "payer_type": "gov_ins",
-  "description": "Primary government health insurance provider.",
-  "contact_info": "contact@nhs.gov"
-}'
-```
-
-```python
-import requests
-import uuid
-
-api_base_url = "https://mta.tech/claimmind"
-access_token = "YOUR_ACCESS_TOKEN"
-tenant_id = "YOUR_TENANT_ID"
-
-payer_data = {
-    "name": "National Health Service",
-    "payer_type": "gov_ins", # Use the code from the created payer type
-    "description": "Primary government health insurance provider.",
-    "contact_info": "contact@nhs.gov"
-}
-
-response = requests.post(
-    f"{api_base_url}/v1/payers",
-    json=payer_data,
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "X-Tenant-Id": tenant_id,
-        "Content-Type": "application/json"
-    }
-)
-print(f"Created Payer: {response.json()}")
-```
-</CodeGroup>
-<Check>
-A `201 Created` response with the details of the new payer, including its `id`.
-</Check>
 </Step>
 </Steps>
