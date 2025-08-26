@@ -39,8 +39,7 @@
               "workflow-guides/insert-new-claim",
               "workflow-guides/retrieve-documents-information",
               "workflow-guides/process-icd",
-              "workflow-guides/process-claim-validation",
-              "error-handling"
+              "workflow-guides/process-claim-validation"
             ]
           }
         ]
