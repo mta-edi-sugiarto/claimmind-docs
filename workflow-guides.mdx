@@ -28,35 +28,33 @@ This guide illustrates the typical workflow for submitting a new claim, processi
 *   A base64 encoded document (e.g., a scanned medical bill or insurance form) to be processed.
 
 <Steps>
-<Step title="1. Insert New Claim">
+<Step title="1. Create a New Claim">
 First, create a new claim in the system. This will provide you with a `claim_id` that you will use for subsequent workflow steps.
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/claims/create" \
+curl -X POST "{api_base_url}/v1/claims/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
-  "claim_code": "NEW-CLAIM-001",
-  "payer_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-  "payer_type": "insurance",
-  "payers_plafon": 5000000
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "claim_code": "NEW-CLAIM-001"
 }'
 ```
 </CodeGroup>
 </Step>
 
-<Step title="2. Retrieve Documents Information">
+<Step title="2. Process OCR for PII">
 With the `claim_id`, you can now trigger the OCR workflow to process the claim's associated document. Provide the document as a base64 encoded string.
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/ocr/create" \
+curl -X POST "{api_base_url}/v1/workflows/ocr/pii/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
   "claim_id": "YOUR_CLAIM_ID",
-  "base64_list": ["BASE64_ENCODED_DOCUMENT_DATA"]
+  "base64": "BASE64_ENCODED_DOCUMENT_DATA"
 }'
 ```
 </CodeGroup>
