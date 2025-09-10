@@ -16,14 +16,14 @@ Retrieve the profile information for a specific user.
 
 <CodeGroup>
 ```bash
-curl -X GET "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/auth/whoami" \
+curl -X GET "{api_base_url}/v1/auth/whoami" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
 
 response = requests.get(
@@ -40,32 +40,32 @@ You should receive a `200 OK` response with the user's profile details.
 </Check>
 </Step>
 
-<Step title="2. Get Table Data (Example: List Claims)">
-Retrieve a list of claims. This can be adapted for other table data by changing the endpoint.
+<Step title="2. Get Specific Claim Data">
+Retrieve information for a specific claim using its `claim_id`. This demonstrates how to fetch detailed data for a single entry.
 
 <CodeGroup>
 ```bash
-curl -X GET "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/claims/get-all" \
+curl -X GET "{api_base_url}/v1/claims/get/YOUR_CLAIM_ID" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
 
 response = requests.get(
-    f"{api_base_url}/v1/claims/get-all",
+    f"{api_base_url}/v1/claims/get/YOUR_CLAIM_ID",
     headers={
         "Authorization": f"Bearer {access_token}"
     }
 )
-print(f"List of Claims: {response.json()}")
+print(f"Claim Details: {response.json()}")
 ```
 </CodeGroup>
 <Check>
-You should receive a `200 OK` response with a list of claims or other requested table data.
+You should receive a `200 OK` response with the details of the specific claim.
 </Check>
 </Step>
 </Steps>

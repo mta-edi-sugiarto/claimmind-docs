@@ -11,14 +11,222 @@ Understanding these data models is crucial for designing your applications to in
 
 ## Core Data Models
 
+### AdminRegistrationCreate
+Use this model to create a new administrator registration.
+
+*   **`first_name` (String)**: The first name of the administrator.
+*   **`last_name` (String)**: The last name of the administrator.
+*   **`email` (String, Email)**: The email address of the administrator.
+*   **`password` (String)**: The password for the administrator's account.
+*   **`tenant_id` (UUID)**: The unique identifier of the tenant (organization) the administrator belongs to.
+*   **`phone_number` (String)**: The phone number of the administrator.
+
+### AdminRegistrationResponse
+This model represents the response after a successful administrator registration.
+
+*   **`id` (UUID)**: The unique identifier for the administrator.
+*   **`name` (String)**: The full name of the administrator.
+*   **`username` (String)**: The username for the administrator's account.
+*   **`email` (String, Email)**: The email address of the administrator.
+*   **`tenant_id` (UUID)**: The unique identifier of the tenant (organization) the administrator belongs to.
+
+### CBGCbgPayload
+Use this model to create a CBG workflow.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`icd_code` (Object)**: The ICD code object.
+*   **`ocr_result` (String)**: The OCR result in string format.
+*   **`regional` (Integer, Optional)**: The regional identifier.
+*   **`jenis_rumah_sakit` (String, Optional)**: The type of hospital.
+*   **`kelas_rumah_sakit` (String, Optional)**: The class of hospital.
+*   **`jenis_perawatan` (String, Optional)**: The type of care.
+*   **`kelas_rawat` (Integer, Optional)**: The class of care.
+*   **`nama_rumah_sakit_khusus` (String, Optional)**: The name of the special hospital.
+
+### CBGResultPushRequest
+Use this model to push CBG results to a claim.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`workflow_id` (String, Optional)**: The ID of the workflow run.
+*   **`cbg_code` (Object, Optional)**: The CBG code object.
+*   **`full_json` (Object, Optional)**: The complete JSON object containing the CBG result data.
+
+### CBGupdatePayload
+Use this model to update a CBG workflow.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`cbg_code` (Object, Optional)**: The CBG code object.
+
+### ChecklistItemFull
+This model represents a full checklist item.
+
+*   **`id` (String, Optional)**: The unique identifier for the checklist item.
+*   **`requirement` (String, Optional)**: The requirement description.
+
+### ClaimValidationRow
+This model represents a row in the claim validation table.
+
+*   **`id` (Integer)**: The unique identifier for the validation row.
+*   **`claim_id` (UUID, Optional)**: The unique identifier for the claim.
+*   **`tenant_id` (UUID, Optional)**: The unique identifier for the tenant.
+*   **`workflow_id` (String)**: The ID of the workflow run.
+*   **`status` (String, Optional)**: The status of the validation.
+*   **`validation_result` (Object)**: The detailed result of the validation.
+*   **`version` (Integer, Optional)**: The version of the validation result.
+*   **`created_at` (String, Date-Time, Optional)**: The timestamp when the record was created.
+*   **`updated_at` (String, Date-Time, Optional)**: The timestamp when the record was last updated.
+
+### ClaimValidationUpdateRequest
+Use this model to update a claim validation result.
+
+*   **`workflow_id` (String)**: The ID of the workflow run.
+*   **`status` (String)**: The status of the validation (default: "completed").
+*   **`validation_result` (Object)**: The detailed result of the validation.
+
+### ClaimValidationUpdateResponse
+This model represents the response after updating a claim validation.
+
+*   **`updated` (Boolean)**: Indicates if the update was successful.
+*   **`data` (ClaimValidationRow, Optional)**: The updated claim validation row.
+
+### ClaimValidatorInput
+This model defines the input data for triggering a claim validation workflow.
+
+*   **`claim_id` (String)**: The identifier of the claim to validate.
+*   **`tenant_id` (String)**: The identifier of the tenant.
+*   **`claim_markdown` (String)**: The claim content in markdown format.
+*   **`patient_profile` (PatientProfile)**: The patient's profile information.
+*   **`validation_output` (Array of Objects, Optional)**: The output of the validation.
+*   **`custom_rules` (Array of Objects, Optional)**: Custom validation rules.
+
+### ClaimValidatorRequest
+Use this model to trigger a claim validation workflow.
+
+*   **`input_data` (ClaimValidatorInput)**: An object containing the data needed for validation.
+
+### ClaimValidatorResponse
+This model represents the response after triggering a claim validation.
+
+*   **`claim_id` (String, Optional)**: The claim ID that was validated.
+*   **`workflow_id` (String, Optional)**: The ID of the workflow run for this validation.
+*   **`status` (String, Optional)**: The status of the validation process.
+*   **`result` (Object, Optional)**: The detailed result of the claim validation.
+
+### CodeItem
+This model represents a code item, such as an ICD-10 or ICD-9 code.
+
+*   **`code` (String)**: The code value.
+*   **`description` (String, Optional)**: A description of the code.
+
+### DatabaseType
+This enum defines the supported database types.
+
+*   **`turso` (String)**: Turso database type.
+*   **`postgres` (String)**: PostgreSQL database type.
+
+### HTTPValidationError
+This model represents a standard HTTP validation error.
+
+*   **`detail` (Array of ValidationError)**: A list of validation error details.
+
+### ICDCodePayload
+Use this model to submit ICD codes.
+
+*   **`claim_id` (String)**: The unique identifier for the claim.
+*   **`workflow_id` (String, Optional)**: The ID of the workflow run.
+*   **`full_json` (Object)**: The complete JSON object containing the ICD code data.
+
+### ICDResultPushRequest
+Use this model to push ICD results to a claim.
+
+*   **`claim_id` (UUID)**: The claim ID to which the ICD result belongs.
+*   **`patient_profile` (PatientProfile)**: The patient's profile information.
+
+### MemoryBlockRequest
+Use this model to create a memory block.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`label` (String)**: The label for the memory block.
+*   **`markdown_text` (String)**: The content of the memory block in markdown format.
+
+### MemoryBlockResponse
+This model represents the response after creating a memory block.
+
+*   **`workflow_id` (String)**: The ID of the workflow run.
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`status` (String)**: The status of the memory block creation.
+*   **`message` (String)**: A descriptive message about the status.
+
 ### OCRClaimsRequest
-Used to create a new claim record in the system.
+Use this model to create a new claim record in the system.
 
 *   **`claim_id` (String)**: A unique identifier for the claim.
 *   **`claim_code` (String, Optional)**: A human-readable code for the claim.
 
+### OCRFullRequest
+Use this model to trigger a full OCR workflow.
+
+*   **`claim_id` (UUID, Optional)**: The unique identifier for the claim.
+*   **`base64_list` (Array of Strings, Optional)**: A list of base64 encoded strings of the documents to be processed.
+*   **`filenames` (Array of Strings, Optional)**: A list of filenames associated with the documents.
+*   **`raw_input` (String, Optional)**: Raw text input to be processed.
+
+### OCRFullResponse
+This model represents the response after triggering a full OCR workflow.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`workflow_id` (String)**: The ID of the workflow run.
+*   **`result` (String)**: The detailed result of the OCR processing.
+*   **`version` (Integer)**: The version of the OCR result.
+
+### OCRFullupdateresultRequest
+Use this model to update the result of a full OCR workflow.
+
+*   **`workflow_id` (String)**: The ID of the workflow run.
+*   **`result` (String)**: The updated result of the OCR processing.
+*   **`ocr_validation` (Object)**: The OCR validation object.
+
+### OCRPagePayload
+This model represents the payload for an OCR page.
+
+*   **`document_id` (UUID, Optional)**: The unique identifier for the document.
+*   **`page_number` (Integer)**: The page number.
+*   **`raw_text` (String)**: The raw text extracted from the page.
+*   **`category` (String)**: The category of the page.
+*   **`ocr_validation` (Object, Optional)**: The OCR validation object for the page.
+
+### OCRPageUpdateRequest
+Use this model to update OCR pages.
+
+*   **`workflow_id` (String)**: The ID of the workflow run.
+*   **`pages` (Array of OCRPagePayload)**: A list of OCR page payloads.
+
+### OCRRevisionItem
+This model represents an item in an OCR revision.
+
+*   **`page_number` (Integer)**: The page number.
+*   **`raw_text` (String, Optional)**: The raw text of the page.
+*   **`blocks` (Object, Optional)**: The blocks of text on the page.
+*   **`category` (String, Optional)**: The category of the page.
+
+### OCRRevisionRequest
+Use this model to create an OCR revision.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`pages` (Array of OCRRevisionItem)**: A list of OCR revision items.
+*   **`full_text_markdown` (String, Optional)**: The full text in markdown format.
+*   **`category` (String, Optional)**: The category of the revision (default: "full_markdown").
+
+### OCRRevisionResponse
+This model represents the response after creating an OCR revision.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`version` (Integer)**: The version of the OCR revision.
+*   **`inserted` (Integer)**: The number of inserted items.
+*   **`status` (String)**: The status of the revision (e.g., "ok", "not_found").
+
 ### OCRTriggerRequest
-Used to trigger an OCR workflow for a claim, typically for PII extraction.
+Use this model to trigger an OCR workflow for a claim, typically for PII extraction.
 
 *   **`claim_id` (String)**: The identifier of the claim to process.
 *   **`claim_code` (String, Optional)**: A human-readable code for the claim.
@@ -27,7 +235,7 @@ Used to trigger an OCR workflow for a claim, typically for PII extraction.
 *   **`workflow_id` (String, Optional)**: An existing workflow ID to use.
 
 ### OCRTriggerResponse
-The generic response structure when a workflow like claim creation or OCR is triggered.
+This model represents the generic response structure when a workflow like claim creation or OCR is triggered.
 
 *   **`claim_id` (UUID, Optional)**: The claim ID that was processed.
 *   **`tenant_id` (UUID, Optional)**: The organization (tenant) to which this claim belongs.
@@ -36,8 +244,165 @@ The generic response structure when a workflow like claim creation or OCR is tri
 *   **`workflow_id` (String, Optional)**: The ID of the workflow run that was initiated.
 *   **`result` (Object, Optional)**: The detailed result of the processing.
 
+### OCRUpdateResponse
+This model represents the response after updating an OCR.
+
+*   **`updated` (Boolean)**: Indicates if the update was successful.
+*   **`data` (OCRUpdateRow, Optional)**: The updated OCR row.
+
+### OCRUpdateRow
+This model represents a row in the OCR update table.
+
+*   **`id` (UUID)**: The unique identifier for the OCR row.
+*   **`workflow_id` (String, Optional)**: The ID of the workflow run.
+*   **`claim_id` (UUID, Optional)**: The unique identifier for the claim.
+*   **`raw_text` (String, Optional)**: The raw text extracted.
+*   **`updated_at` (String, Date-Time, Optional)**: The timestamp when the record was last updated.
+*   **`version` (Integer, Optional)**: The version of the OCR result.
+
+### PatientProfile
+This model contains the patient's profile information, including ICD codes and INA-CBG.
+
+*   **`icd10_list` (Array of CodeItem)**: A list of ICD-10 codes.
+*   **`icd9_list` (Array of CodeItem)**: A list of ICD-9 codes.
+*   **`ina_cbg` (String, Optional)**: The INA-CBG code.
+
+### PlansAssign
+This model is used to assign plans.
+
+*   **`plan_code` (String)**: The code of the plan.
+*   **`start_date` (String)**: The start date of the plan.
+*   **`end_date` (String)**: The end date of the plan.
+
+### RegistrationCheckResponse
+This model represents the response for a registration check.
+
+*   **`name` (Boolean)**: Indicates if the name is available.
+*   **`email` (Boolean)**: Indicates if the email is available.
+
+### RolesResponse
+This model represents a user role in the system.
+
+*   **`id` (UUID)**: Unique identifier for the role.
+*   **`name` (String)**: Name of the role.
+*   **`description` (String)**: Description of the role.
+
+### RollbackPayload
+Use this model to rollback a claim to a previous version.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`rollback_to_version` (Integer)**: The version number to rollback to.
+*   **`reason` (String, Optional)**: The reason for the rollback (default: "reason not provided").
+
+### TenantConfigCreate
+Use this model to create tenant configurations.
+
+*   **`types` (String, Optional)**: The type of configuration.
+*   **`configs` (Array of TenantConfigCreateItems)**: A list of configuration items.
+
+### TenantConfigCreateItems
+This model represents an item in the tenant configuration.
+
+*   **`keys` (String)**: The configuration key.
+*   **`values` (String)**: The configuration value.
+*   **`description` (String, Optional)**: A description of the configuration item.
+
+### TenantConfigResponse
+This model represents the response after creating tenant configurations.
+
+*   **`success` (String)**: Indicates if the operation was successful.
+
+### TenantCreate
+Use this model to create a new tenant (organization).
+
+*   **`name` (String)**: The name of the tenant.
+*   **`address` (String, Optional)**: The address of the tenant.
+*   **`logo_url` (String, Optional)**: The URL of the tenant's logo.
+*   **`plan_code` (String, Optional)**: The plan code for the tenant.
+*   **`subscription_id` (String, Optional)**: The subscription ID for the tenant.
+*   **`domain` (String)**: The domain associated with the tenant.
+*   **`region` (String, Optional)**: The region of the tenant.
+*   **`types` (String, Optional)**: The types associated with the tenant.
+*   **`classes` (String, Optional)**: The classes associated with the tenant.
+
+### TenantCreateDatabase
+Use this model to create a tenant database.
+
+*   **`types` (DatabaseType)**: The type of database.
+*   **`db_name` (String)**: The name of the database.
+
+### TenantCreateDatabaseResponse
+This model represents the response after creating a tenant database.
+
+*   **`database_id` (String)**: The ID of the created database.
+*   **`hostname` (String)**: The hostname of the database.
+
+### TenantDetailResponse
+This model provides detailed information about a tenant.
+
+*   **`name` (String)**: The name of the tenant.
+*   **`address` (String, Optional)**: The address of the tenant.
+*   **`logo_url` (String, Optional)**: The URL of the tenant's logo.
+*   **`plan_code` (String, Optional)**: The plan code for the tenant.
+*   **`subscription_id` (String, Optional)**: The subscription ID for the tenant.
+*   **`domain` (String)**: The domain associated with the tenant.
+*   **`region` (String, Optional)**: The region of the tenant.
+*   **`types` (String, Optional)**: The types associated with the tenant.
+*   **`classes` (String, Optional)**: The classes associated with the tenant.
+*   **`special_name` (String, Optional)**: A special name for the tenant.
+*   **`institution_types` (String)**: The institution types associated with the tenant.
+
+### TenantResponse
+This model represents a tenant (organization) in the system.
+
+*   **`id` (UUID)**: Unique identifier for the tenant.
+*   **`name` (String)**: Name of the tenant.
+*   **`domain` (String, Optional)**: The domain associated with the tenant.
+
+### TenantUpdate
+Use this model to update an existing tenant.
+
+*   **`name` (String)**: The name of the tenant.
+*   **`address` (String, Optional)**: The address of the tenant.
+*   **`logo_url` (String, Optional)**: The URL of the tenant's logo.
+*   **`plan_code` (String, Optional)**: The plan code for the tenant.
+*   **`subscription_id` (String, Optional)**: The subscription ID for the tenant.
+*   **`domain` (String)**: The domain associated with the tenant.
+*   **`region` (String, Optional)**: The region of the tenant.
+*   **`types` (String, Optional)**: The types associated with the tenant.
+*   **`classes` (String, Optional)**: The classes associated with the tenant.
+*   **`special_name` (String, Optional)**: A special name for the tenant.
+*   **`institution_types` (String)**: The institution types associated with the tenant.
+
+### UpdateClaimBody
+Use this model to update a claim's OCR data.
+
+*   **`claim_code` (String, Optional)**: A human-readable code for the claim.
+*   **`ocr_raw_text` (String, Optional)**: The raw text from OCR.
+*   **`ocr_blocks` (Object, Optional)**: The OCR blocks data.
+*   **`ocr_category` (String, Optional)**: The category of the OCR.
+
+### UserCreate
+Use this model to create a new user.
+
+*   **`first_name` (String)**: The first name of the user.
+*   **`last_name` (String)**: The last name of the user.
+*   **`email` (String, Email)**: The email address of the user.
+*   **`password` (String)**: The password for the user's account.
+*   **`role_id` (UUID)**: The unique identifier for the user's role.
+*   **`phone_number` (String)**: The phone number of the user.
+*   **`channel_access` (Array of Strings, Optional)**: List of channels the user has access to.
+*   **`status` (String, Optional)**: User's account status (default: "active").
+
+### UserProfileUpdate
+Use this model to update a user's profile.
+
+*   **`first_name` (String)**: The first name of the user.
+*   **`last_name` (String)**: The last name of the user.
+*   **`phone_number` (String)**: The phone number of the user.
+
 ### UserResponse
-Represents a user within an organization (tenant).
+This model represents a user within an organization (tenant).
 
 *   **`id` (UUID)**: Unique identifier for the user.
 *   **`keycloak_id` (String)**: Identifier from the Keycloak authentication system.
@@ -50,37 +415,55 @@ Represents a user within an organization (tenant).
 *   **`channel_access` (Array of Strings, Optional)**: List of channels the user has access to.
 *   **`status` (String)**: User's account status (e.g., "active", "inactive").
 
-### TenantResponse
-Represents a tenant (organization) in the system.
+### UserUpdate
+Use this model to update an existing user.
 
-*   **`id` (UUID)**: Unique identifier for the tenant.
-*   **`name` (String)**: Name of the tenant.
-*   **`domain` (String, Optional)**: The domain associated with the tenant.
+*   **`email` (String, Email)**: The email address of the user.
+*   **`phone_number` (String, Optional)**: The phone number of the user.
+*   **`channel_access` (Array of Strings, Optional)**: List of channels the user has access to.
+*   **`first_name` (String, Optional)**: The first name of the user.
+*   **`last_name` (String, Optional)**: The last name of the user.
+*   **`status` (String, Optional)**: User's account status.
+*   **`password` (String, Optional)**: The password for the user's account.
 
-### ClaimValidatorRequest
-The payload for triggering a claim validation workflow.
+### ValidationError
+This model represents a single validation error.
 
-*   **`input_data` (Object)**: An object containing the data needed for validation, including `claim_id`, `tenant_id`, `claim_markdown`, and `patient_profile`.
+*   **`loc` (Array of String/Integer)**: The location of the error.
+*   **`msg` (String)**: The error message.
+*   **`type` (String)**: The type of error.
 
-### ClaimValidatorResponse
-The response structure after triggering a claim validation.
+### ValidationRulesRequest
+Use this model to request validation rules.
 
-*   **`claim_id` (String, Optional)**: The claim ID that was validated.
-*   **`workflow_id` (String, Optional)**: The ID of the workflow run for this validation.
-*   **`status` (String, Optional)**: The status of the validation process.
-*   **`result` (Object, Optional)**: The detailed result of the claim validation.
+*   **`tenant_id` (String)**: The unique identifier for the tenant.
+*   **`patient_profile` (PatientProfile)**: The patient's profile information.
 
-### ICDResultPushRequest
-The payload for pushing ICD results to a claim.
+### ValidationRulesResponse
+This model represents the response containing validation rules.
 
-*   **`claim_id` (UUID)**: The claim ID to which the ICD result belongs.
-*   **`full_json` (Object)**: The complete JSON object containing the ICD result data.
+*   **`tenant_id` (String)**: The unique identifier for the tenant.
+*   **`patient_profile` (PatientProfile)**: The patient's profile information.
+*   **`checklist` (Array of ChecklistItemFull)**: A list of checklist items.
+
+### ICDWorkflowPayload
+Use this model to create an ICD workflow.
+
+*   **`claim_id` (UUID)**: The unique identifier for the claim.
+*   **`ocr_result` (String)**: The OCR result in string format.
+*   **`regional` (Integer, Optional)**: The regional identifier.
+*   **`jenis_rumah_sakit` (String, Optional)**: The type of hospital.
+*   **`kelas_rumah_sakit` (String, Optional)**: The class of hospital.
+*   **`jenis_perawatan` (String, Optional)**: The type of care.
+*   **`kelas_rawat` (Integer, Optional)**: The class of care.
+*   **`nama_rumah_sakit_khusus` (String, Optional)**: The name of the special hospital.
 
 ## Relationships
 
 *   A **Claim** is identified by a `claim_id` and is the central entity for workflows.
-*   Workflows like **OCR**, **Validation**, and **ICD Coding** are triggered for a specific **Claim**.
+*   Workflows like **OCR**, **Validation**, **ICD Coding**, and **CBG** are triggered for a specific **Claim**.
 *   **Users** belong to a **Tenant** (Organization).
-*   Responses like **OCRTriggerResponse** and **ClaimValidatorResponse** provide the status and `workflow_id` for the initiated processes.
+*   Responses like **OCRTriggerResponse**, **ClaimValidatorResponse**, **OCRFullResponse**, and **MemoryBlockResponse** provide the status and `workflow_id` for the initiated processes.
+*   **PatientProfile** is a crucial component for **ICDResultPushRequest** and **ValidationRulesRequest**, containing patient-specific medical codes.
 
 This overview should provide a solid foundation for understanding the data structures within the ClaimMind API. For precise field definitions and constraints, always refer to the OpenAPI specification.

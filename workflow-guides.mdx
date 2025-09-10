@@ -14,9 +14,8 @@ These guides are designed to help you understand the flow of data and operations
 Here are the detailed workflow guides:
 
 *   [Getting General Information](/workflow-guides/getting-general-information)
-*   [Insert New Claim](/workflow-guides/insert-new-claim)
-*   [Retrieve Documents Information](/workflow-guides/retrieve-documents-information)
-*   [Process ICD](/workflow-guides/process-icd)
+*   [OCR Processing](/workflow-guides/ocr-processing)
+*   [Process ICD and Getting INACBG](/workflow-guides/process-icd)
 *   [Process Claim Validation](/workflow-guides/process-claim-validation)
 
 ## End-to-End Workflow: Claim Submission to Validation
@@ -44,8 +43,8 @@ curl -X POST "{api_base_url}/v1/claims/create" \
 </CodeGroup>
 </Step>
 
-<Step title="2. Process OCR for PII">
-With the `claim_id`, you can now trigger the OCR workflow to process the claim's associated document. Provide the document as a base64 encoded string.
+<Step title="2a. Process OCR for PII">
+With the `claim_id`, you can now trigger the OCR workflow to process the claim's associated document for PII. Provide the document as a base64 encoded string.
 
 <CodeGroup>
 ```bash
@@ -60,30 +59,66 @@ curl -X POST "{api_base_url}/v1/workflows/ocr/pii/create" \
 </CodeGroup>
 </Step>
 
-<Step title="3. Process ICD">
-After OCR processing, you can trigger the ICD processing workflow.
+<Step title="2b. Process OCR into Markdown">
+After processing for PII, you can trigger the general OCR workflow to extract all information from the document. This process will generate a markdown representation of the document's content.
 
 <CodeGroup>
 ```bash
-curl -X POST "http://api.vm01-ext.claimmind.dev.keycenter.ai/v1/workflows/icd/create" \
+curl -X POST "{api_base_url}/v1/workflows/ocr/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
-    "module": "MODULE_ICD",
-    "input_data": {
-        "claim_id": "YOUR_CLAIM_ID"
-    }
+  "claim_id": "YOUR_CLAIM_ID",
+  "base64_list": ["BASE64_ENCODED_DOCUMENT_DATA"]
+}'
+```
+</CodeGroup>
+</Step>
+
+<Step title="3a. Process ICD">
+After OCR processing (including the normal OCR that generates markdown), you can trigger the ICD processing workflow. The `ocr_result` in the payload should be the markdown content obtained from the "OCR Normal" step.
+
+<CodeGroup>
+```bash
+curl -X POST "{api_base_url}/v1/workflows/icd/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "YOUR_CLAIM_ID",
+  "ocr_result": "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP"
+}'
+```
+</CodeGroup>
+</Step>
+
+<Step title="3b. Process INACBG">
+After processing ICD codes, you can trigger the INACBG processing workflow. This step requires the `claim_id`, the `icd_code` obtained from the previous ICD processing step, and the `ocr_result` (markdown content) from the "OCR Normal" step.
+
+<CodeGroup>
+```bash
+curl -X POST "{api_base_url}/v1/workflows/cbg/create" \
+-H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "claim_id": "YOUR_CLAIM_ID",
+  "icd_code": {
+    "icd10_list": [
+      { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+    ],
+    "icd9_list": []
+  },
+  "ocr_result": "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP"
 }'
 ```
 </CodeGroup>
 </Step>
 
 <Step title="4. Process Claim Validation">
-Finally, trigger the claim validation workflow. This will check the claim against predefined rules.
+Finally, trigger the claim validation workflow. This will check the claim against predefined rules, utilizing the ICD and INACBG results.
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/validation/create" \
+curl -X POST "{api_base_url}/v1/workflows/validation/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
@@ -92,9 +127,11 @@ curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/work
     "tenant_id": "YOUR_TENANT_ID",
     "claim_markdown": "Extracted markdown content from OCR (or manual input)",
     "patient_profile": {
-      "icd10_list": [],
+      "icd10_list": [
+        { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+      ],
       "icd9_list": [],
-      "ina_cbg": null
+      "ina_cbg": "G-4-26-II"
     }
   }
 }'

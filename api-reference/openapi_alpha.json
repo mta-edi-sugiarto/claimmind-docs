@@ -4,6 +4,18 @@
     "title": "ClaimMind CL-Service",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "{api_base_url}",
+      "description": "The base URL for the Chat App API. Replace {api_base_url} with the actual API base URL provided for your application (e.g., from props.appDetail.api_base_url).",
+      "variables": {
+        "api_base_url": {
+          "default": "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service",
+          "description": "Actual base URL of the API"
+        }
+      }
+    }
+  ],
   "paths": {
     "/v1/auth/whoami": {
       "get": {
@@ -30,7 +42,498 @@
           }
         ]
       }
-    },    
+    },
+    "/v1/users": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "summary": "List Users",
+        "operationId": "list_users_v1_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Users V1 Users Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Register User",
+        "operationId": "register_user_v1_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/users/{user_id}": {
+      "put": {
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Update User",
+        "operationId": "update_user_v1_users__user_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/roles": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "summary": "List Roles",
+        "operationId": "list_roles_v1_roles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RolesResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Roles V1 Roles Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/registration/users": {
+      "post": {
+        "tags": [
+          "Registration Tenant and User"
+        ],
+        "summary": "Register Admin",
+        "operationId": "register_admin_v1_registration_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRegistrationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminRegistrationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registration/tenants": {
+      "post": {
+        "tags": [
+          "Registration Tenant and User"
+        ],
+        "summary": "Create Organization",
+        "operationId": "create_organization_v1_registration_tenants_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tenants": {
+      "get": {
+        "tags": [
+          "Tenants Management"
+        ],
+        "summary": "Get Detail Tenant",
+        "operationId": "get_detail_Tenant_v1_tenants_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDetailResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/tenants/{tenant_id}": {
+      "put": {
+        "tags": [
+          "Tenants Management"
+        ],
+        "summary": "Update Organization",
+        "operationId": "update_organization_v1_tenants__tenant_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tenant Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tenants/configs": {
+      "post": {
+        "tags": [
+          "Tenants Management"
+        ],
+        "summary": "Create Tenant Configs",
+        "operationId": "create_tenant_configs_v1_tenants_configs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantConfigCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantConfigResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/tenants/create-database": {
+      "post": {
+        "tags": [
+          "Tenants Management"
+        ],
+        "summary": "Create Database Configs",
+        "operationId": "create_database_configs_v1_tenants_create_database_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantCreateDatabase"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantCreateDatabaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/plans": {
+      "get": {
+        "tags": [
+          "Plans Subscription"
+        ],
+        "summary": "Get Plans",
+        "operationId": "get_plans_v1_plans_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/plans/assign": {
+      "post": {
+        "tags": [
+          "Plans Subscription"
+        ],
+        "summary": "Post Plans",
+        "operationId": "post_plans_v1_plans_assign_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlansAssign"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/v1/claims/create": {
       "post": {
         "tags": [
@@ -231,11 +734,120 @@
           }
         }
       }
-    },                
+    },
+    "/v1/claims/get-all": {
+      "get": {
+        "tags": [
+          "Claims Management"
+        ],
+        "summary": "List Claims",
+        "operationId": "list_claims_v1_claims_get_all_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "claim_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Claim Id"
+            }
+          },
+          {
+            "name": "rule_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rule Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/workflows/ocr/pii/create": {
       "post": {
         "tags": [
-          "Workflows OCR"
+          "Workflows"
         ],
         "summary": "Create Ocr Pii",
         "operationId": "create_ocr_pii_v1_workflows_ocr_pii_create_post",
@@ -281,7 +893,7 @@
     "/v1/workflows/ocr/create": {
       "post": {
         "tags": [
-          "Workflows OCR"
+          "Workflows"
         ],
         "summary": "Create Ocr",
         "operationId": "create_ocr_v1_workflows_ocr_create_post",
@@ -324,10 +936,56 @@
         ]
       }
     },
+    "/v1/workflows/ocr/fetch-result": {
+      "post": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Update OCR Result by workflow_id",
+        "operationId": "update_ocr_full_v1_workflows_ocr_fetch_result_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OCRFullupdateresultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OCRUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/v1/workflows/ocr/result/{claim_id}": {
       "get": {
         "tags": [
-          "Workflows OCR"
+          "Workflows"
         ],
         "summary": "Get Ocr Result By Claim",
         "operationId": "get_ocr_result_by_claim_v1_workflows_ocr_result__claim_id__get",
@@ -374,7 +1032,7 @@
     "/v1/workflows/ocr/result-latest": {
       "get": {
         "tags": [
-          "Workflows OCR"
+          "Workflows"
         ],
         "summary": "Get Latest Ocr Per Claim",
         "operationId": "get_latest_ocr_per_claim_v1_workflows_ocr_result_latest_get",
@@ -400,7 +1058,7 @@
     "/v1/workflows/ocr/result-latest/{claim_id}": {
       "get": {
         "tags": [
-          "Workflows OCR"
+          "Workflows"
         ],
         "summary": "Get Latest Ocr Result By Claim",
         "operationId": "get_latest_ocr_result_by_claim_v1_workflows_ocr_result_latest__claim_id__get",
@@ -447,7 +1105,7 @@
     "/v1/workflows/ocr/revisions": {
       "post": {
         "tags": [
-          "Workflows OCR"
+          "Workflows"
         ],
         "summary": "Create Ocr Revision",
         "operationId": "create_ocr_revision_v1_workflows_ocr_revisions_post",
@@ -490,13 +1148,13 @@
         ]
       }
     },
-    "/v1/workflows/icd/submit": {
+    "/v1/workflows/icd/fetch-result": {
       "post": {
         "tags": [
-          "Workflows ICD"
+          "Workflows"
         ],
-        "summary": "Update Icd",
-        "operationId": "update_icd_v1_workflows_icd_submit_post",
+        "summary": "Push Icd Result",
+        "operationId": "push_icd_result_v1_workflows_icd_fetch_result_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -536,14 +1194,64 @@
         ]
       }
     },
-    
+    "/v1/workflows/icd/submit": {
+      "post": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Update Icd",
+        "operationId": "update_icd_v1_workflows_icd_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ICDCodePayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/v1/workflows/icd/fetch-result/{claim_id}": {
       "get": {
         "tags": [
-          "Workflows ICD"
+          "Workflows"
         ],
         "summary": "Get Icd View",
         "operationId": "get_icd_view_v1_workflows_icd_fetch_result__claim_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "claim_id",
@@ -582,7 +1290,7 @@
     "/v1/workflows/validation/create": {
       "post": {
         "tags": [
-          "Workflows Validation"
+          "Workflows"
         ],
         "summary": "Claim Validator",
         "operationId": "claim_validator_v1_workflows_validation_create_post",
@@ -628,7 +1336,7 @@
     "/v1/workflows/validation/rules": {
       "post": {
         "tags": [
-          "Workflows Validation"
+          "Workflows"
         ],
         "summary": "Search Validation Rules",
         "operationId": "search_validation_rules_v1_workflows_validation_rules_post",
@@ -671,32 +1379,30 @@
         ]
       }
     },
-
-    "/v1/workflows/cbg/result/{claim_id}": {
-      "get": {
+    "/v1/workflows/validation/fetch-result": {
+      "post": {
         "tags": [
-          "Workflows CBG"
+          "Workflows"
         ],
-        "summary": "Get Latest Cbg Result",
-        "operationId": "get_latest_cbg_result_v1_workflows_cbg_result__claim_id__get",
-        "parameters": [
-          {
-            "name": "claim_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Claim Id"
+        "summary": "Update Claim Validation result by workflow_id",
+        "operationId": "post_update_claim_validation_result_v1_workflows_validation_fetch_result_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimValidationUpdateRequest"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/ClaimValidationUpdateResponse"
                 }
               }
             }
@@ -707,149 +1413,34 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "summary": "Healthcheck",
+        "operationId": "healthcheck_healthcheck_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
                 }
               }
             }
           }
         }
-      }
-    },
-    "/v1/workflows/cbg/create": {
-      "post": {
-        "tags": [
-          "Workflows CBG"
-        ],
-        "summary": "Create Cbg Workflow",
-        "operationId": "create_cbg_workflow_v1_workflows_cbg_create_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CBGCbgPayload"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/workflows/cbg/submit": {
-      "post": {
-        "tags": [
-          "Workflows CBG"
-        ],
-        "summary": "Update Cbg",
-        "operationId": "update_cbg_v1_workflows_cbg_submit_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CBGupdatePayload"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/workflows/icd/create": {
-      "post": {
-        "tags": [
-          "Workflows ICD"
-        ],
-        "summary": "Create Icd Workflow",
-        "operationId": "create_icd_workflow_v1_workflows_icd_create_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/app__api__v1__endpoints__workflow_icd_service__ICDWorkflowPayload"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
       }
     }
   },
@@ -930,169 +1521,6 @@
           "tenant_id"
         ],
         "title": "AdminRegistrationResponse"
-      },
-      "CBGCbgPayload": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "icd_code": {
-            "type": "object",
-            "title": "Icd Code"
-          },
-          "ocr_result": {
-            "type": "string",
-            "title": "Ocr Result"
-          },
-          "regional": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Regional"
-          },
-          "jenis_rumah_sakit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Jenis Rumah Sakit"
-          },
-          "kelas_rumah_sakit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Kelas Rumah Sakit"
-          },
-          "jenis_perawatan": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Jenis Perawatan"
-          },
-          "kelas_rawat": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Kelas Rawat"
-          },
-          "nama_rumah_sakit_khusus": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nama Rumah Sakit Khusus"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "icd_code",
-          "ocr_result"
-        ],
-        "title": "CBGCbgPayload"
-      },
-      "CBGResultPushRequest": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "workflow_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Workflow Id"
-          },
-          "cbg_code": {
-            "anyOf": [
-              {
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cbg Code"
-          },
-          "full_json": {
-            "anyOf": [
-              {
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Full Json"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "workflow_id"
-        ],
-        "title": "CBGResultPushRequest"
-      },
-      "CBGupdatePayload": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "cbg_code": {
-            "anyOf": [
-              {
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cbg Code"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id"
-        ],
-        "title": "CBGupdatePayload"
       },
       "ChecklistItemFull": {
         "properties": {
@@ -1275,7 +1703,8 @@
             "title": "Claim Markdown"
           },
           "patient_profile": {
-            "$ref": "#/components/schemas/PatientProfile"
+            "type": "object",
+            "title": "Patient Profile"
           },
           "validation_output": {
             "anyOf": [
@@ -1428,7 +1857,7 @@
             "type": "string",
             "title": "Claim Id"
           },
-          "workflow_id": {
+          "tenant_id": {
             "anyOf": [
               {
                 "type": "string"
@@ -1437,7 +1866,26 @@
                 "type": "null"
               }
             ],
-            "title": "Workflow Id"
+            "title": "Tenant Id"
+          },
+          "patient_profile": {
+            "type": "object",
+            "title": "Patient Profile"
+          }
+        },
+        "type": "object",
+        "required": [
+          "claim_id",
+          "patient_profile"
+        ],
+        "title": "ICDCodePayload"
+      },
+      "ICDResultPushRequest": {
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Claim Id"
           },
           "full_json": {
             "type": "object",
@@ -1449,85 +1897,7 @@
           "claim_id",
           "full_json"
         ],
-        "title": "ICDCodePayload"
-      },
-      "ICDResultPushRequest": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "patient_profile": {
-            "$ref": "#/components/schemas/PatientProfile"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "patient_profile"
-        ],
         "title": "ICDResultPushRequest"
-      },
-      "MemoryBlockRequest": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          },
-          "markdown_text": {
-            "type": "string",
-            "title": "Markdown Text"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "label",
-          "markdown_text"
-        ],
-        "title": "MemoryBlockRequest"
-      },
-      "MemoryBlockResponse": {
-        "properties": {
-          "workflow_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Workflow Id"
-          },
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message"
-          }
-        },
-        "type": "object",
-        "required": [
-          "workflow_id",
-          "claim_id",
-          "status",
-          "message"
-        ],
-        "title": "MemoryBlockResponse"
       },
       "OCRClaimsRequest": {
         "properties": {
@@ -1660,73 +2030,6 @@
           "result"
         ],
         "title": "OCRFullupdateresultRequest"
-      },
-      "OCRPagePayload": {
-        "properties": {
-          "document_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Document Id"
-          },
-          "page_number": {
-            "type": "integer",
-            "title": "Page Number"
-          },
-          "raw_text": {
-            "type": "string",
-            "title": "Raw Text"
-          },
-          "category": {
-            "type": "string",
-            "title": "Category"
-          },
-          "ocr_validation": {
-            "anyOf": [
-              {
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ocr Validation"
-          }
-        },
-        "type": "object",
-        "required": [
-          "page_number",
-          "raw_text",
-          "category"
-        ],
-        "title": "OCRPagePayload"
-      },
-      "OCRPageUpdateRequest": {
-        "properties": {
-          "workflow_id": {
-            "type": "string",
-            "title": "Workflow Id"
-          },
-          "pages": {
-            "items": {
-              "$ref": "#/components/schemas/OCRPagePayload"
-            },
-            "type": "array",
-            "title": "Pages"
-          }
-        },
-        "type": "object",
-        "required": [
-          "workflow_id",
-          "pages"
-        ],
-        "title": "OCRPageUpdateRequest"
       },
       "OCRRevisionItem": {
         "properties": {
@@ -2108,17 +2411,7 @@
           }
         },
         "type": "object",
-        "title": "PatientProfile",
-        "example": {
-          "icd10_list": [
-            { "code": "F01", "description": "" },
-            { "code": "J18.9", "description": "" }
-          ],
-          "icd9_list": [
-            { "code": "99.10", "description": "" }
-          ],
-          "ina_cbg": "G-4-26-II"
-        }
+        "title": "PatientProfile"
       },
       "PlansAssign": {
         "properties": {
@@ -2143,24 +2436,6 @@
         ],
         "title": "PlansAssign"
       },
-      "RegistrationCheckResponse": {
-        "properties": {
-          "name": {
-            "type": "boolean",
-            "title": "Name"
-          },
-          "email": {
-            "type": "boolean",
-            "title": "Email"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name",
-          "email"
-        ],
-        "title": "RegistrationCheckResponse"
-      },
       "RolesResponse": {
         "properties": {
           "id": {
@@ -2184,37 +2459,6 @@
           "description"
         ],
         "title": "RolesResponse"
-      },
-      "RollbackPayload": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "rollback_to_version": {
-            "type": "integer",
-            "title": "Rollback To Version"
-          },
-          "reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reason",
-            "default": "reason not provided"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "rollback_to_version"
-        ],
-        "title": "RollbackPayload"
       },
       "TenantConfigCreate": {
         "properties": {
@@ -2501,35 +2745,12 @@
               }
             ],
             "title": "Classes"
-          },
-          "special_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Special Name"
-          },
-          "institution_types": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Institution Types"
           }
         },
         "type": "object",
         "required": [
           "name",
-          "domain",
-          "institution_types"
+          "domain"
         ],
         "title": "TenantDetailResponse"
       },
@@ -2649,35 +2870,12 @@
               }
             ],
             "title": "Classes"
-          },
-          "special_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Special Name"
-          },
-          "institution_types": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Institution Types"
           }
         },
         "type": "object",
         "required": [
           "name",
-          "domain",
-          "institution_types"
+          "domain"
         ],
         "title": "TenantUpdate"
       },
@@ -2803,36 +3001,6 @@
           "phone_number"
         ],
         "title": "UserCreate"
-      },
-      "UserProfileUpdate": {
-        "properties": {
-          "first_name": {
-            "type": "string",
-            "title": "First Name"
-          },
-          "last_name": {
-            "type": "string",
-            "title": "Last Name"
-          },
-          "phone_number": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Phone Number"
-          }
-        },
-        "type": "object",
-        "required": [
-          "first_name",
-          "last_name",
-          "phone_number"
-        ],
-        "title": "UserProfileUpdate"
       },
       "UserResponse": {
         "properties": {
@@ -2977,17 +3145,6 @@
               }
             ],
             "title": "Status"
-          },
-          "password": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Password"
           }
         },
         "type": "object",
@@ -2995,8 +3152,7 @@
           "email",
           "phone_number",
           "first_name",
-          "last_name",
-          "password"
+          "last_name"
         ],
         "title": "UserUpdate"
       },
@@ -3074,110 +3230,6 @@
           "checklist"
         ],
         "title": "ValidationRulesResponse"
-      },
-      "app__api__v1__endpoints__workflow_icd_service__ICDWorkflowPayload": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "ocr_result": {
-            "type": "string",
-            "title": "Ocr Result"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "ocr_result"
-        ],
-        "title": "ICDWorkflowPayload"
-      },
-      "app__schemas__workflow__ICDWorkflowPayload": {
-        "properties": {
-          "claim_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Claim Id"
-          },
-          "ocr_result": {
-            "type": "string",
-            "title": "Ocr Result"
-          },
-          "regional": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Regional"
-          },
-          "jenis_rumah_sakit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Jenis Rumah Sakit"
-          },
-          "kelas_rumah_sakit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Kelas Rumah Sakit"
-          },
-          "jenis_perawatan": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Jenis Perawatan"
-          },
-          "kelas_rawat": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Kelas Rawat"
-          },
-          "nama_rumah_sakit_khusus": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nama Rumah Sakit Khusus"
-          }
-        },
-        "type": "object",
-        "required": [
-          "claim_id",
-          "ocr_result"
-        ],
-        "title": "ICDWorkflowPayload"
       }
     },
     "securitySchemes": {

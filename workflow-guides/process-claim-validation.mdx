@@ -17,14 +17,14 @@ Retrieve the ICD information associated with a specific claim.
 
 <CodeGroup>
 ```bash
-curl -X GET "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/icd/fetch-result/{claim_id}" \
+curl -X GET "{api_base_url}/v1/workflows/icd/fetch-result/YOUR_CLAIM_ID" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
 claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
 
@@ -47,15 +47,17 @@ Retrieve the set of validation rules that will be applied during the claim valid
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/validation/rules" \
+curl -X POST "{api_base_url}/v1/workflows/validation/rules" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
   "tenant_id": "YOUR_TENANT_ID",
   "patient_profile": {
-    "icd10_list": [],
+    "icd10_list": [
+      { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+    ],
     "icd9_list": [],
-    "ina_cbg": null
+    "ina_cbg": "G-4-26-II"
   }
 }'
 ```
@@ -63,16 +65,18 @@ curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/work
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
 tenant_id = "YOUR_TENANT_ID" # Replace with your tenant ID
 
 validation_rules_data = {
     "tenant_id": tenant_id,
     "patient_profile": {
-        "icd10_list": [],
+        "icd10_list": [
+            { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+        ],
         "icd9_list": [],
-        "ina_cbg": None
+        "ina_cbg": "G-4-26-II"
     }
 }
 
@@ -97,7 +101,7 @@ Trigger the claim validation process using the retrieved claim information and r
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/validation/create" \
+curl -X POST "{api_base_url}/v1/workflows/validation/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
@@ -106,9 +110,11 @@ curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/work
     "tenant_id": "YOUR_TENANT_ID",
     "claim_markdown": "Extracted markdown content from OCR (or manual input)",
     "patient_profile": {
-      "icd10_list": [],
+      "icd10_list": [
+        { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+      ],
       "icd9_list": [],
-      "ina_cbg": null
+      "ina_cbg": "G-4-26-II"
     }
   }
 }'
@@ -117,7 +123,7 @@ curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/work
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
 claim_id = "YOUR_CLAIM_ID" # Use the claim_id from Step 1
 tenant_id = "YOUR_TENANT_ID" # Replace with your tenant ID
@@ -129,9 +135,11 @@ validation_data = {
         "tenant_id": tenant_id,
         "claim_markdown": claim_markdown_content,
         "patient_profile": {
-            "icd10_list": [],
+            "icd10_list": [
+                { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+            ],
             "icd9_list": [],
-            "ina_cbg": None
+            "ina_cbg": "G-4-26-II"
         }
     }
 }

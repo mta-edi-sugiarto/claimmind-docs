@@ -1,6 +1,6 @@
 ---
-title: "Process ICD"
-description: "A guide to processing ICD codes for a claim."
+title: "Process ICD and Getting INACBG"
+description: "A comprehensive guide to processing International Classification of Diseases (ICD) codes and obtaining INACBG results for a claim."
 ---
 
 ## Overview
@@ -13,33 +13,30 @@ This guide details the workflow for processing International Classification of D
 
 <Steps>
 <Step title="1. Process ICD">
-Trigger the ICD workflow for a specific claim.
+Initiate the ICD processing workflow for a specific claim. This step requires the `claim_id` and the markdown content from the OCR Normal processing.
 
 <CodeGroup>
 ```bash
-curl -X POST "<BASE_URL>/v1/workflows/icd/create" \
+curl -X POST "{api_base_url}/v1/workflows/icd/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
-    "module": "MODULE_ICD",
-    "input_data": {
-        "claim_id": "YOUR_CLAIM_ID"
-    }
+  "claim_id": "YOUR_CLAIM_ID",
+  "ocr_result": "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP"
 }'
 ```
 
 ```python
 import requests
 
-api_base_url = "<BASE_URL>"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
-claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+claim_id = "YOUR_CLAIM_ID" # Use the claim_id from the claim creation step
+ocr_markdown_content = "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP" # Use the markdown content from OCR Normal step
 
 icd_process_data = {
-    "module": "MODULE_ICD",
-    "input_data": {
-        "claim_id": claim_id
-    }
+    "claim_id": claim_id,
+    "ocr_result": ocr_markdown_content
 }
 
 response = requests.post(
@@ -50,7 +47,10 @@ response = requests.post(
         "Content-Type": "application/json"
     }
 )
-print(f"ICD Processing Triggered. Response: {response.json()}")
+response_json = response.json()
+print(f"ICD Processing Triggered. Response: {response_json}")
+# Extract ICD codes from the response if needed for the next step
+# For example: icd_codes = response_json.get("result", {}).get("icd_codes")
 ```
 </CodeGroup>
 <Check>
@@ -58,53 +58,92 @@ You should receive a `200 OK` response indicating the ICD processing workflow ha
 </Check>
 </Step>
 
-<Step title="2. Submit ICD Codes">
-Submit the processed ICD codes to be associated with the claim.
+<Step title="2. Get INACBG Result">
+After ICD processing, you can trigger the INACBG processing workflow. This step requires the `claim_id`, the `icd_code` obtained from the previous ICD processing step, and the `ocr_result` (markdown content) from the OCR Normal step.
 
 <CodeGroup>
 ```bash
-curl -X POST "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service/v1/workflows/icd/submit" \
+curl -X POST "{api_base_url}/v1/workflows/cbg/create" \
 -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 -H "Content-Type: application/json" \
 -d '{
   "claim_id": "YOUR_CLAIM_ID",
-  "patient_profile": {
-    "icd10_list": [{"code": "I10", "description": "Essential (primary) hypertension"}],
-    "icd9_list": [],
-    "ina_cbg": null
-  }
+  "icd_code": {
+    "icd10_list": [
+      { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+    ],
+    "icd9_list": []
+  },
+  "ocr_result": "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP"
 }'
 ```
 
 ```python
 import requests
 
-api_base_url = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
+api_base_url = "{api_base_url}"
 access_token = "YOUR_ACCESS_TOKEN"
-claim_id = "YOUR_CLAIM_ID" # Replace with the actual claim ID
+claim_id = "YOUR_CLAIM_ID" # Use the claim_id from the claim creation step
+ocr_markdown_content = "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP" # Use the markdown content from OCR Normal step
+icd_codes_from_previous_step = {
+    "icd10_list": [
+      { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+    ],
+    "icd9_list": []
+} # Replace with actual ICD codes obtained from Step 1
 
-icd_submit_data = {
+inacbg_process_data = {
     "claim_id": claim_id,
-    "patient_profile": {
-        "icd10_list": [{"code": "I10", "description": "Essential (primary) hypertension"}], # Example ICD codes
-        "icd9_list": [],
-        "ina_cbg": None
-    }
+    "icd_code": icd_codes_from_previous_step,
+    "ocr_result": ocr_markdown_content
 }
 
 response = requests.post(
-    f"{api_base_url}/v1/workflows/icd/submit",
-    json=icd_submit_data,
+    f"{api_base_url}/v1/workflows/cbg/create",
+    json=inacbg_process_data,
     headers={
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
     }
 )
-print(f"ICD Codes Submitted. Response: {response.json()}")
+response_json = response.json()
+print(f"INACBG Processing Triggered. Response: {response_json}")
+# Extract INACBG result from the response if needed for the next step
+# For example: inacbg_result = response_json.get("result", {}).get("ina_cbg")
 ```
 </CodeGroup>
+
+<RequestExample>
+```json
+{
+  "claim_id": "YOUR_CLAIM_ID",
+  "icd_code": {
+    "icd10_list": [
+      { "code": "F01", "description": "Dementia in Alzheimer''s disease" }
+    ],
+    "icd9_list": []
+  },
+  "ocr_result": "MARKDOWN_CONTENT_FROM_OCR_NORMAL_STEP"
+}
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "claim_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "workflow_id": "some-workflow-id",
+  "result": {
+    "ina_cbg": "G-4-26-II",
+    "description": "Example INACBG description"
+  },
+  "version": 1
+}
+```
+</ResponseExample>
+
 <Check>
-You should receive a `200 OK` response confirming the ICD codes have been submitted.
+You should receive a `200 OK` response with the INACBG result.
 </Check>
 </Step>
 </Steps>

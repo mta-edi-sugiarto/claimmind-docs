@@ -25,21 +25,20 @@
             ]
           },
           {
-            "group": "Core Concepts",
-            "pages": [
-              "concepts-glossary",
-              "data-models-overview"
-            ]
-          },
-          {
             "group": "How-To Guides",
             "pages": [
               "workflow-guides",
               "workflow-guides/getting-general-information",
-              "workflow-guides/insert-new-claim",
-              "workflow-guides/retrieve-documents-information",
+              "workflow-guides/ocr-processing",
               "workflow-guides/process-icd",
               "workflow-guides/process-claim-validation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts-glossary",
+              "data-models-overview"
             ]
           }
         ]
