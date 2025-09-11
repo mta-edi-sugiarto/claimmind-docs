@@ -14,27 +14,22 @@ Before you begin integrating with the ClaimMind API, ensure you have the followi
 
 This section guides you through authenticating and making your first request to the ClaimMind API.
 
-### Step 1: Obtain an Access Token (Keycloak)
+### Step 1: Obtain an Access Token
 
-To interact with the ClaimMind API, you first need to authenticate through Keycloak and obtain an access token.
+To interact with the ClaimMind API, you first need to authenticate and obtain an access token.
 
 <Steps>
-<Step title="Send a Keycloak login request">
-Make a `POST` request to your Keycloak token endpoint with your `client_id`, `client_secret`, `username`, and `password` to obtain an access token.
+<Step title="Send a login request">
+Make a `POST` request to the `/v1/auth/login` endpoint with your `username` and `password` to obtain an access token.
 
 <CodeGroup>
 ```bash
-KEYCLOAK_TOKEN_ENDPOINT="https://auth.claimmind.dev.keycenter.ai/auth/realms/claim-mind/protocol/openid-connect/token"
-CLIENT_ID="web"
-CLIENT_SECRET="YOUR_CLIENT_SECRET"
+API_BASE_URL="https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service"
 USERNAME="your_username@example.com"
 PASSWORD="your_password"
 
-curl --location "${KEYCLOAK_TOKEN_ENDPOINT}" \
+curl -X POST "${API_BASE_URL}/v1/auth/login" \
 --header 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode 'grant_type=password' \
---data-urlencode "client_id=${CLIENT_ID}" \
---data-urlencode "client_secret=${CLIENT_SECRET}" \
 --data-urlencode "username=${USERNAME}" \
 --data-urlencode "password=${PASSWORD}"
 ```
@@ -42,19 +37,14 @@ curl --location "${KEYCLOAK_TOKEN_ENDPOINT}" \
 ```python
 import requests
 
-KEYCLOAK_TOKEN_ENDPOINT = "https://auth.claimmind.dev.keycenter.ai/auth/realms/claim-mind/protocol/openid-connect/token"
-CLIENT_ID = "web"
-CLIENT_SECRET = "YOUR_CLIENT_SECRET"
+API_BASE_URL = "https://api.vm01-ext.claimmind.dev.keycenter.ai/cl-service" # Replace with your actual API base URL
 USERNAME = "your_username@example.com"
 PASSWORD = "your_password"
 
 response = requests.post(
-    KEYCLOAK_TOKEN_ENDPOINT,
+    f"{API_BASE_URL}/v1/auth/login",
     headers={'Content-Type': 'application/x-www-form-urlencoded'},
     data={
-        'grant_type': 'password',
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
         'username': USERNAME,
         'password': PASSWORD
     }

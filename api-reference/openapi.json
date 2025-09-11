@@ -2024,17 +2024,6 @@
               }
             ],
             "title": "Raw Input"
-          },
-          "workflow_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Workflow Id"
           }
         },
         "type": "object",
